@@ -6,6 +6,7 @@
     - [x] [telegram](https://github.com/0wQ/telegram-notify)
     - [x] [pushdeer](https://www.pushdeer.com/)
     - [x] [bark](https://github.com/Finb/Bark)
+    - [x] [dingtalk](https://open.dingtalk.com/document/robots/custom-robot-access)
 - [x] 基站定位
 - [x] 定时查询流量
 - [x] 开机通知

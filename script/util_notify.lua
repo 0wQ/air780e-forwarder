@@ -29,7 +29,7 @@ local function notifyToTelegram(msg)
 end
 
 -- 发送到 pushdeer
-local function notifyToPushDeer(msg, httpCallback)
+local function notifyToPushDeer(msg)
     if config.PUSHDEER_API == "" then
         log.error("util_notify.notifyToPushDeer", "未配置 `config.PUSHDEER_API`")
         return
@@ -53,7 +53,7 @@ local function notifyToPushDeer(msg, httpCallback)
 end
 
 -- 发送到 bark
-local function notifyToBark(msg, httpCallback)
+local function notifyToBark(msg)
     if config.BARK_API == "" then
         log.error("util_notify.notifyToBark", "未配置 `config.BARK_API`")
         return
@@ -73,6 +73,30 @@ local function notifyToBark(msg, httpCallback)
 
     log.info("util_notify.notifyToBark", "POST", url)
     return http.request("POST", url, header, urlencodeTab(body)).wait()
+end
+
+-- 发送到 dingtalk
+local function notifyToDingTalk(msg)
+    if config.DINGTALK_WEBHOOK == nil or config.DINGTALK_WEBHOOK == "" then
+        log.error("util_notify.notifyToDingTalk", "未配置 `config.DINGTALK_WEBHOOK`")
+        return
+    end
+
+    local header = {
+        ["Content-Type"] = "application/json; charset=utf-8"
+    }
+    local body = {
+        msgtype = "text",
+        text = {
+            content = msg
+        }
+    }
+    local json_data = json.encode(body)
+    -- LuatOS Bug, json.encode 会将 \n 转换为 \b
+    json_data = string.gsub(json_data, "\\b", "\\n")
+
+    log.info("util_notify.notifyToDingTalk", "POST", config.DINGTALK_WEBHOOK, json_data)
+    return http.request("POST", config.DINGTALK_WEBHOOK, header, json_data).wait()
 end
 
 function util_notify.send(msg)
@@ -121,6 +145,8 @@ function util_notify.send(msg)
         notify = notifyToPushDeer
     elseif config.NOTIFY_TYPE == "bark" then
         notify = notifyToBark
+    elseif config.NOTIFY_TYPE == "dingtalk" then
+        notify = notifyToDingTalk
     else
         log.error("util_notify.send", "发送通知失败", "未配置 `config.NOTIFY_TYPE`")
         return
@@ -135,7 +161,7 @@ function util_notify.send(msg)
             while retry_count < max_retry do
                 local code, headers, body = notify(msg)
                 if code == 200 then
-                    log.info("util_notify.send", "发送通知成功", "retry_count:", retry_count)
+                    log.info("util_notify.send", "发送通知成功", "retry_count:", retry_count, "code:", code, "body:", body)
                     break
                 else
                     retry_count = retry_count + 1
