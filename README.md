@@ -1,6 +1,17 @@
 # Air780E 短信转发
 
-## 使用方法
+## Feature
+
+- [x] 多种通知方式
+    - [x] [telegram](https://github.com/0wQ/telegram-notify)
+    - [x] [pushdeer](https://www.pushdeer.com/)
+    - [x] [bark](https://github.com/Finb/Bark)
+- [x] 基站定位
+- [x] 定时查询流量
+- [x] 开机通知
+- [x] POW 按键长按短按操作
+
+## Usage
 
 ### 1. 按注释修改 `script/config.lua` 配置文件
 
