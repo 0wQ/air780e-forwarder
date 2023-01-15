@@ -8,6 +8,7 @@
     - [x] [bark](https://github.com/Finb/Bark)
     - [x] [dingtalk](https://open.dingtalk.com/document/robots/custom-robot-access)
     - [x] [feishu](https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN)
+    - [x] [wecom](https://developer.work.weixin.qq.com/document/path/91770)
 - [x] 基站定位
 - [x] 定时查询流量
 - [x] 开机通知
