@@ -1,5 +1,5 @@
 return {
-    -- 通知类型 telegram, pushdeer, bark, dingtalk
+    -- 通知类型 telegram, pushdeer, bark, dingtalk, feishu
     NOTIFY_TYPE = "pushdeer",
     --
     -- telegram 通知配置, https://github.com/0wQ/telegram-notify
@@ -17,6 +17,9 @@ return {
     --
     -- dingtalk 通知配置, https://open.dingtalk.com/document/robots/custom-robot-access
     DINGTALK_WEBHOOK = "",
+    --
+    -- feishu 通知配置, https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN
+    FEISHU_WEBHOOK = "",
     --
     -- 定时查询流量间隔, 单位毫秒, 设置为 0 关闭
     QUERY_TRAFFIC_INTERVAL = 1000 * 60 * 60 * 6,

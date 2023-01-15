@@ -99,6 +99,30 @@ local function notifyToDingTalk(msg)
     return http.request("POST", config.DINGTALK_WEBHOOK, header, json_data).wait()
 end
 
+-- 发送到 feishu
+local function notifyToFeishu(msg)
+    if config.FEISHU_WEBHOOK == nil or config.FEISHU_WEBHOOK == "" then
+        log.error("util_notify.notifyToFeishu", "未配置 `config.FEISHU_WEBHOOK`")
+        return
+    end
+
+    local header = {
+        ["Content-Type"] = "application/json; charset=utf-8"
+    }
+    local body = {
+        msg_type = "text",
+        content = {
+            text = msg
+        }
+    }
+    local json_data = json.encode(body)
+    -- LuatOS Bug, json.encode 会将 \n 转换为 \b
+    json_data = string.gsub(json_data, "\\b", "\\n")
+
+    log.info("util_notify.notifyToFeishu", "POST", config.FEISHU_WEBHOOK, json_data)
+    return http.request("POST", config.FEISHU_WEBHOOK, header, json_data).wait()
+end
+
 function util_notify.send(msg)
     log.info("util_notify.send", "发送通知", config.NOTIFY_TYPE)
 
@@ -147,6 +171,8 @@ function util_notify.send(msg)
         notify = notifyToBark
     elseif config.NOTIFY_TYPE == "dingtalk" then
         notify = notifyToDingTalk
+    elseif config.NOTIFY_TYPE == "feishu" then
+        notify = notifyToFeishu
     else
         log.error("util_notify.send", "发送通知失败", "未配置 `config.NOTIFY_TYPE`")
         return
