@@ -30,11 +30,11 @@ end
 
 -- 发送到 pushdeer
 local function notifyToPushDeer(msg)
-    if config.PUSHDEER_API == "" then
+    if config.PUSHDEER_API == nil or config.PUSHDEER_API == "" then
         log.error("util_notify.notifyToPushDeer", "未配置 `config.PUSHDEER_API`")
         return
     end
-    if config.PUSHDEER_KEY == "" then
+    if config.PUSHDEER_KEY == nil or config.PUSHDEER_KEY == "" then
         log.error("util_notify.notifyToPushDeer", "未配置 `config.PUSHDEER_KEY`")
         return
     end
@@ -54,11 +54,11 @@ end
 
 -- 发送到 bark
 local function notifyToBark(msg)
-    if config.BARK_API == "" then
+    if config.BARK_API == nil or config.BARK_API == "" then
         log.error("util_notify.notifyToBark", "未配置 `config.BARK_API`")
         return
     end
-    if config.BARK_KEY == "" then
+    if config.BARK_KEY == nil or config.BARK_KEY == "" then
         log.error("util_notify.notifyToBark", "未配置 `config.BARK_KEY`")
         return
     end
