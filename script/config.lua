@@ -1,5 +1,5 @@
 return {
-    -- 通知类型 telegram, pushdeer, bark, dingtalk, feishu, wecom
+    -- 通知类型 telegram, pushdeer, bark, dingtalk, feishu, wecom, wecomapp
     NOTIFY_TYPE = "pushdeer",
     --
     -- telegram 通知配置, https://github.com/0wQ/telegram-notify
@@ -23,6 +23,12 @@ return {
     --
     -- wecom 通知配置, https://developer.work.weixin.qq.com/document/path/91770
     WECOM_WEBHOOK = "",
+    --
+    -- wecomapp 通知配置, https://developer.work.weixin.qq.com/document/path/90236
+    WECOMAPP_CORPID = "",
+    WECOMAPP_SECRET = "",
+    WECOMAPP_AGENTID = "",
+    WECOMAPP_TOUSER = "",
     --
     -- 定时查询流量间隔, 单位毫秒, 设置为 0 关闭
     QUERY_TRAFFIC_INTERVAL = 1000 * 60 * 60 * 6,

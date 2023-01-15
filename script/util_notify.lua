@@ -147,6 +147,63 @@ local function notifyToWeCom(msg)
     return http.request("POST", config.WECOM_WEBHOOK, header, json_data).wait()
 end
 
+-- 发送到 wecomapp
+local WECOMAPP_TOKEN = ""
+local WECOMAPP_TOKEN_TIME = 0
+local function notifyToWeComApp(msg)
+    if config.WECOMAPP_CORPID == nil or config.WECOMAPP_CORPID == "" then
+        log.error("util_notify.notifyToWeComApp", "未配置 `config.WECOMAPP_CORPID`")
+        return
+    end
+    if config.WECOMAPP_SECRET == nil or config.WECOMAPP_SECRET == "" then
+        log.error("util_notify.notifyToWeComApp", "未配置 `config.WECOMAPP_SECRET`")
+        return
+    end
+    if config.WECOMAPP_AGENTID == nil or config.WECOMAPP_AGENTID == "" then
+        log.error("util_notify.notifyToWeComApp", "未配置 `config.WECOMAPP_AGENTID`")
+        return
+    end
+    if config.WECOMAPP_TOUSER == nil or config.WECOMAPP_TOUSER == "" then
+        log.error("util_notify.notifyToWeComApp", "未配置 `config.WECOMAPP_TOUSER`")
+        return
+    end
+
+    local function getToken()
+        local get_token_api =
+            "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" ..
+            config.WECOMAPP_CORPID .. "&corpsecret=" .. config.WECOMAPP_SECRET
+        local access_token = ""
+        local code, headers, body = http.request("GET", get_token_api).wait()
+        log.info("util_notify.notifyToWeComApp.getToken", code, headers, body)
+        if code == 200 and body ~= nil then
+            local data = json.decode(body)
+            access_token = data.access_token
+        end
+        return access_token
+    end
+
+    if WECOMAPP_TOKEN == "" or os.time() - WECOMAPP_TOKEN_TIME >= 7200 then
+        WECOMAPP_TOKEN = getToken()
+        WECOMAPP_TOKEN_TIME = os.time()
+    end
+
+    local header = {
+        ["Content-Type"] = "application/json"
+    }
+    local body = {
+        touser = config.WECOMAPP_TOUSER,
+        msgtype = "text",
+        agentid = config.WECOMAPP_AGENTID,
+        text = {
+            content = msg
+        }
+    }
+    local send_message_api = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" .. WECOMAPP_TOKEN
+
+    log.info("util_notify.notifyToWeComApp", "POST", send_message_api)
+    return http.request("POST", send_message_api, header, json.encode(body)).wait()
+end
+
 function util_notify.send(msg)
     log.info("util_notify.send", "发送通知", config.NOTIFY_TYPE)
 
@@ -199,6 +256,8 @@ function util_notify.send(msg)
         notify = notifyToFeishu
     elseif config.NOTIFY_TYPE == "wecom" then
         notify = notifyToWeCom
+    elseif config.NOTIFY_TYPE == "wecomapp" then
+        notify = notifyToWeComApp
     else
         log.error("util_notify.send", "发送通知失败", "未配置 `config.NOTIFY_TYPE`")
         return
