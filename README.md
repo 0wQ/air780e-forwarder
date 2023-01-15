@@ -9,6 +9,7 @@
     - [x] [钉钉群机器人 DingTalk](https://open.dingtalk.com/document/robots/custom-robot-access)
     - [x] [飞书群机器人 Feishu](https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN)
     - [x] [企业微信群机器人 WeCom](https://developer.work.weixin.qq.com/document/path/91770)
+    - [x] [next-smtp-proxy](https://github.com/0wQ/next-smtp-proxy)
 - [x] 基站定位
 - [x] 定时查询流量
 - [x] 开机通知

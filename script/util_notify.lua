@@ -147,6 +147,51 @@ local function notifyToWeCom(msg)
     return http.request("POST", config.WECOM_WEBHOOK, header, json_data).wait()
 end
 
+-- 发送到 next-smtp-proxy
+local function notifyToNextSmtpProxy(msg)
+    if config.NEXT_SMTP_PROXY_API == nil or config.NEXT_SMTP_PROXY_API == "" then
+        log.error("util_notify.notifyToNextSmtpProxy", "未配置 `config.NEXT_SMTP_PROXY_API`")
+        return
+    end
+    if config.NEXT_SMTP_PROXY_USER == nil or config.NEXT_SMTP_PROXY_USER == "" then
+        log.error("util_notify.notifyToNextSmtpProxy", "未配置 `config.NEXT_SMTP_PROXY_USER`")
+        return
+    end
+    if config.NEXT_SMTP_PROXY_PASSWORD == nil or config.NEXT_SMTP_PROXY_PASSWORD == "" then
+        log.error("util_notify.notifyToNextSmtpProxy", "未配置 `config.NEXT_SMTP_PROXY_PASSWORD`")
+        return
+    end
+    if config.NEXT_SMTP_PROXY_HOST == nil or config.NEXT_SMTP_PROXY_HOST == "" then
+        log.error("util_notify.notifyToNextSmtpProxy", "未配置 `config.NEXT_SMTP_PROXY_HOST`")
+        return
+    end
+    if config.NEXT_SMTP_PROXY_PORT == nil or config.NEXT_SMTP_PROXY_PORT == "" then
+        log.error("util_notify.notifyToNextSmtpProxy", "未配置 `config.NEXT_SMTP_PROXY_PORT`")
+        return
+    end
+    if config.NEXT_SMTP_PROXY_TO_EMAIL == nil or config.NEXT_SMTP_PROXY_TO_EMAIL == "" then
+        log.error("util_notify.notifyToNextSmtpProxy", "未配置 `config.NEXT_SMTP_PROXY_TO_EMAIL`")
+        return
+    end
+
+    local header = {
+        ["Content-Type"] = "application/x-www-form-urlencoded"
+    }
+    local body = {
+        user = config.NEXT_SMTP_PROXY_USER,
+        password = config.NEXT_SMTP_PROXY_PASSWORD,
+        host = config.NEXT_SMTP_PROXY_HOST,
+        port = config.NEXT_SMTP_PROXY_PORT,
+        form_name = config.NEXT_SMTP_PROXY_FORM_NAME,
+        to_email = config.NEXT_SMTP_PROXY_TO_EMAIL,
+        subject = config.NEXT_SMTP_PROXY_SUBJECT,
+        text = msg
+    }
+
+    log.info("util_notify.notifyToNextSmtpProxy", "POST", config.NEXT_SMTP_PROXY_API, urlencodeTab(body))
+    return http.request("POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body)).wait()
+end
+
 function util_notify.send(msg)
     log.info("util_notify.send", "发送通知", config.NOTIFY_TYPE)
 
@@ -199,6 +244,8 @@ function util_notify.send(msg)
         notify = notifyToFeishu
     elseif config.NOTIFY_TYPE == "wecom" then
         notify = notifyToWeCom
+    elseif config.NOTIFY_TYPE == "next-smtp-proxy" then
+        notify = notifyToNextSmtpProxy
     else
         log.error("util_notify.send", "发送通知失败", "未配置 `config.NOTIFY_TYPE`")
         return
