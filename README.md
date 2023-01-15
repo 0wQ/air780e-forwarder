@@ -3,12 +3,12 @@
 ## Feature
 
 - [x] 多种通知方式
-    - [x] [telegram](https://github.com/0wQ/telegram-notify)
-    - [x] [pushdeer](https://www.pushdeer.com/)
-    - [x] [bark](https://github.com/Finb/Bark)
-    - [x] [dingtalk](https://open.dingtalk.com/document/robots/custom-robot-access)
-    - [x] [feishu](https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN)
-    - [x] [wecom](https://developer.work.weixin.qq.com/document/path/91770)
+    - [x] [Telegram](https://github.com/0wQ/telegram-notify)
+    - [x] [PushDeer](https://www.pushdeer.com/)
+    - [x] [Bark](https://github.com/Finb/Bark)
+    - [x] [钉钉群机器人 DingTalk](https://open.dingtalk.com/document/robots/custom-robot-access)
+    - [x] [飞书群机器人 Feishu](https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN)
+    - [x] [企业微信群机器人 WeCom](https://developer.work.weixin.qq.com/document/path/91770)
 - [x] 基站定位
 - [x] 定时查询流量
 - [x] 开机通知
