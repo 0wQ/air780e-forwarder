@@ -38,5 +38,8 @@ return {
     QUERY_TRAFFIC_INTERVAL = 1000 * 60 * 60 * 6,
     --
     -- 定时基站定位间隔, 单位毫秒, 设置为 0 关闭
-    LOCATION_INTERVAL = 1000 * 60 * 30
+    LOCATION_INTERVAL = 1000 * 60 * 30,
+    --
+    -- 开机通知
+    BOOT_NOTIFY = true,
 }

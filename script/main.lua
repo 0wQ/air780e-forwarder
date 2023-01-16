@@ -82,7 +82,9 @@ sys.taskInit(
         sys.waitUntil("COORD_INIT_DONE", 1000 * 20)
 
         -- 开机通知
-        util_notify.send("#BOOT")
+        if config.BOOT_NOTIFY then
+            util_notify.send("#BOOT")
+        end
 
         -- 定时查询流量
         if config.QUERY_TRAFFIC_INTERVAL and config.QUERY_TRAFFIC_INTERVAL >= 1000 * 60 then
