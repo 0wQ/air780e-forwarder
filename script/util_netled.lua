@@ -12,9 +12,9 @@ sys.taskInit(
     function()
         while true do
             netled(1)
-            sys.wait(netled_duration)
+            sys.waitUntil("NET_LED_UPDATE", netled_duration)
             netled(0)
-            sys.wait(netled_interval)
+            sys.waitUntil("NET_LED_UPDATE", netled_interval)
         end
     end
 )
@@ -22,11 +22,15 @@ sys.taskInit(
 function util_netled.blink(duration, interval, restore)
     netled_duration = duration or netled_default_duration
     netled_interval = interval or netled_default_interval
+    log.info("publish NET_LED_UPDATE")
+    sys.publish("NET_LED_UPDATE")
     if restore then
         sys.timerStart(
             function()
                 netled_duration = netled_default_duration
                 netled_interval = netled_default_interval
+                log.info("publish NET_LED_UPDATE")
+                sys.publish("NET_LED_UPDATE")
             end,
             restore
         )
