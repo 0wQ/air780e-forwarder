@@ -258,7 +258,9 @@ function util_notify.send(msg)
             local retry_count = 0
 
             while retry_count < max_retry do
+                util_netled.blink(50, 50)
                 local code, headers, body = notify(msg)
+                util_netled.blink()
                 if code == 200 then
                     log.info("util_notify.send", "发送通知成功", "retry_count:", retry_count, "code:", code, "body:", body)
                     break

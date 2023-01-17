@@ -60,7 +60,7 @@ util_notify = require "util_notify"
 sms.setNewSmsCb(
     function(num, txt, metas)
         log.info("smsCallback", num, txt, metas and json.encode(metas) or "")
-        util_netled.blink(200, 200, 1000)
+        util_netled.blink(50, 50, 5000)
         util_notify.send({txt, "", "发件人号码: " .. num, "#SMS"})
     end
 )
@@ -70,7 +70,7 @@ sys.taskInit(
         -- 等待网络环境准备就绪
         sys.waitUntil("IP_READY")
 
-        util_netled.blink(200, 200, 5000)
+        util_netled.blink(50, 50, 1000)
 
         -- 开机基站定位
         util_location.getCoord(
