@@ -2,8 +2,8 @@ local util_mobile = {mcc = 99, mnc = 99, band = 99}
 
 -- 查询流量代码
 local trafficCode = {
-    CU = {"10010", "1071"},
-    CM = {"10086", "cxll"},
+    CU = {"10010", "2082"},
+    CM = {"10086", "CXLL"},
     CT = {"10001", "108"}
 }
 
