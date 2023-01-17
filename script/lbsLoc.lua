@@ -110,6 +110,34 @@ local function tx(taskName,timeout, ...)
 	end
 end
 
+--- 阻塞等待新的网络事件或者特定事件，只能用于任务函数中
+-- @string 任务标志
+-- @int 超时时间，如果==0或者空，则没有超时一致等待
+-- @... 其他参数和socket.wait一致
+-- @return 
+-- @boolean 网络异常返回false，其他返回true
+-- @table or boolean 超时返回false，有新的数据到返回true，被其他事件退出的，返回接收到的事件
+local function wait(taskName,timeout, netc)
+	local is_err, result = socket.wait(netc)
+	if is_err then
+		return false,false
+	end
+	if not result then
+		result = sys_wait(taskName, socket.EVENT, timeout)
+	else
+		return true,true
+	end
+	if type(result) == 'table' then
+		if result[2] == 0 then
+			return true, true
+		else
+			return false, false
+		end
+	else
+		return true, false
+	end
+end
+
 --- ASCII字符串 转化为 BCD编码格式字符串(仅支持数字)
 -- @string inStr 待转换字符串
 -- @number destLen 转换后的字符串期望长度，如果实际不足，则填充F
@@ -233,7 +261,6 @@ local function taskClient(cbFnc, reqAddr, timeout, productKey, host, port,reqTim
         if not sys.waitUntil("IP_READY", timeout) then return cbFnc(1) end
     end
     local retryCnt  = 0
-    sys.wait(3000)
     local reqStr = pack.pack("bAbAAAAA", productKey:len(), productKey,
                              (reqAddr and 2 or 0) + (reqTime and 4 or 0) + 8 +(reqWifi and 16 or 0) + 32, "",
                              numToBcdNum(mobile.imei()), enMuid(),
@@ -252,10 +279,9 @@ local function taskClient(cbFnc, reqAddr, timeout, productKey, host, port,reqTim
         if result then
             while true do
                 log.info(" lbsloc socket_service connect true")
-                sys.wait(2000);
                 local result, _ = tx(d1Name, 0, netc, reqStr) ---发送数据
                 if result then
-                    sys.wait(5000);
+                    wait(d1Name, timeout - 100, netc)
                     local is_err, param, _, _ = socket.rx(netc, rx_buff) -- 接收数据
                     log.info("是否接收和数据长度", not is_err, param)
                     if not is_err then -- 如果接收成功

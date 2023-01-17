@@ -21,7 +21,7 @@ function util_location.getCoord(callback, type, wifi, timeout)
                     log.info("util_location.getCoord", "距离上次定位时间太短", current_time - last_time)
                     return
                 end
-                sys.wait(1000)
+                sys.wait(2000)
             end
             last_time = current_time
             lbsLoc.request(
