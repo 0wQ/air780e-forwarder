@@ -253,7 +253,6 @@ function util_notify.send(msg)
 
     sys.taskInit(
         function()
-            sys.wait(100)
             local max_retry = 10
             local retry_count = 0
 
