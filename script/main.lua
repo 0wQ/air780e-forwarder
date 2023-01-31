@@ -74,7 +74,7 @@ sys.taskInit(
         -- 等待网络环境准备就绪
         sys.waitUntil("IP_READY")
 
-        util_netled.blink(50, 50, 1000)
+        util_netled.init()
 
         -- 开机基站定位
         util_location.getCoord(
