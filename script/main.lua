@@ -54,7 +54,9 @@ gpio.setup(
     gpio.PULLUP
 )
 
+-- 加载模块
 config = require "config"
+util_http = require "util_http"
 util_netled = require "util_netled"
 util_mobile = require "util_mobile"
 util_location = require "util_location"

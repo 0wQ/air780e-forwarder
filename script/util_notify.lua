@@ -25,7 +25,7 @@ local function notifyToTelegram(msg)
     }
 
     log.info("util_notify.notifyToTelegram", "POST", config.TELEGRAM_PROXY_API)
-    return http.request("POST", config.TELEGRAM_PROXY_API, header, msg).wait()
+    return util_http.fetch(nil, "POST", config.TELEGRAM_PROXY_API, header, msg)
 end
 
 -- 发送到 pushdeer
@@ -49,7 +49,7 @@ local function notifyToPushDeer(msg)
     }
 
     log.info("util_notify.notifyToPushDeer", "POST", config.PUSHDEER_API)
-    return http.request("POST", config.PUSHDEER_API, header, urlencodeTab(body)).wait()
+    return util_http.fetch(nil, "POST", config.PUSHDEER_API, header, urlencodeTab(body))
 end
 
 -- 发送到 bark
@@ -72,7 +72,7 @@ local function notifyToBark(msg)
     local url = config.BARK_API .. "/" .. config.BARK_KEY
 
     log.info("util_notify.notifyToBark", "POST", url)
-    return http.request("POST", url, header, urlencodeTab(body)).wait()
+    return util_http.fetch(nil, "POST", url, header, urlencodeTab(body))
 end
 
 -- 发送到 dingtalk
@@ -96,7 +96,7 @@ local function notifyToDingTalk(msg)
     json_data = string.gsub(json_data, "\\b", "\\n")
 
     log.info("util_notify.notifyToDingTalk", "POST", config.DINGTALK_WEBHOOK, json_data)
-    return http.request("POST", config.DINGTALK_WEBHOOK, header, json_data).wait()
+    return util_http.fetch(nil, "POST", config.DINGTALK_WEBHOOK, header, json_data)
 end
 
 -- 发送到 feishu
@@ -120,7 +120,7 @@ local function notifyToFeishu(msg)
     json_data = string.gsub(json_data, "\\b", "\\n")
 
     log.info("util_notify.notifyToFeishu", "POST", config.FEISHU_WEBHOOK, json_data)
-    return http.request("POST", config.FEISHU_WEBHOOK, header, json_data).wait()
+    return util_http.fetch(nil, "POST", config.FEISHU_WEBHOOK, header, json_data)
 end
 
 -- 发送到 wecom
@@ -144,7 +144,7 @@ local function notifyToWeCom(msg)
     json_data = string.gsub(json_data, "\\b", "\\n")
 
     log.info("util_notify.notifyToWeCom", "POST", config.WECOM_WEBHOOK, json_data)
-    return http.request("POST", config.WECOM_WEBHOOK, header, json_data).wait()
+    return util_http.fetch(nil, "POST", config.WECOM_WEBHOOK, header, json_data)
 end
 
 -- 发送到 next-smtp-proxy
@@ -189,7 +189,7 @@ local function notifyToNextSmtpProxy(msg)
     }
 
     log.info("util_notify.notifyToNextSmtpProxy", "POST", config.NEXT_SMTP_PROXY_API, urlencodeTab(body))
-    return http.request("POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body)).wait()
+    return util_http.fetch(nil, "POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body))
 end
 
 function util_notify.send(msg)
