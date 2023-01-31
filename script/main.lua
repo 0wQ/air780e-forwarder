@@ -3,18 +3,15 @@ VERSION = "1.0.0"
 
 log.setLevel("DEBUG")
 log.info("main", PROJECT, VERSION)
+log.info("main", "开机原因", pm.lastReson())
 
 sys = require "sys"
 sysplus = require "sysplus"
 require "sysplus"
 
--- 添加硬狗防止程序卡死, 在支持的设备上启用这个功能
-if wdt then
-    -- 初始化 watchdog 设置为 9s
-    wdt.init(9000)
-    -- 3s 喂一次狗
-    sys.timerLoopStart(wdt.feed, 3000)
-end
+-- 添加硬狗防止程序卡死
+wdt.init(9000)
+sys.timerLoopStart(wdt.feed, 3000)
 
 -- 设置 DNS
 socket.setDNS(nil, 1, "119.29.29.29")
@@ -121,6 +118,21 @@ sys.taskInit(
         )
         -- 电源键长按查询流量
         sys.subscribe("POWERKEY_LONG_PRESS", util_mobile.queryTraffic)
+
+        -- 开启低功耗模式
+        if config.LOW_POWER_MODE then
+            sys.wait(1000 * 15)
+            log.warn("main", "即将关闭 usb 电源, 如需查看日志请在配置中关闭低功耗模式")
+            sys.wait(1000 * 5)
+
+            -- 关闭 USB
+            pm.power(pm.USB, false)
+            pm.power(pm.GPS, false)
+            pm.power(pm.GPS_ANT, false)
+            pm.power(pm.DAC_EN, false)
+            -- 休眠
+            pm.force(pm.LIGHT)
+        end
     end
 )
 

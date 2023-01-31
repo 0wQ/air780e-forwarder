@@ -42,4 +42,7 @@ return {
     --
     -- 开机通知
     BOOT_NOTIFY = true,
+    --
+    -- 开启低功耗模式
+    LOW_POWER_MODE = false,
 }
