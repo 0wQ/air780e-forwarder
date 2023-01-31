@@ -62,12 +62,31 @@ util_mobile = require "util_mobile"
 util_location = require "util_location"
 util_notify = require "util_notify"
 
--- 短信回调
+-- 短信接收回调
 sms.setNewSmsCb(
-    function(num, txt, metas)
-        log.info("smsCallback", num, txt, metas and json.encode(metas) or "")
-        util_netled.blink(50, 50, 5000)
-        util_notify.add({txt, "", "发件人号码: " .. num, "#SMS"})
+    function(sender_number, sms_content, m)
+        local time = string.format("%d/%02d/%02d %02d:%02d:%02d", m.year + 2000, m.mon, m.day, m.hour, m.min, m.sec)
+        log.info("smsCallback", time, sender_number, sms_content)
+
+        -- 短信控制
+        local is_sms_ctrl = false
+        local receiver_number, sms_content_to_be_sent = sms_content:match("^SMS,(+?%d+),(.+)$")
+        receiver_number, sms_content_to_be_sent = receiver_number or "", sms_content_to_be_sent or ""
+        if sms_content_to_be_sent ~= "" and receiver_number ~= "" and #receiver_number >= 5 and #receiver_number <= 20 then
+            sms.send(receiver_number, sms_content_to_be_sent)
+            is_sms_ctrl = true
+        end
+
+        -- 发送通知
+        util_notify.add(
+            {
+                sms_content,
+                "",
+                "发件号码: " .. sender_number,
+                "发件时间: " .. time,
+                "#SMS" .. (is_sms_ctrl and " #CTRL" or "")
+            }
+        )
     end
 )
 
