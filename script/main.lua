@@ -67,7 +67,7 @@ sms.setNewSmsCb(
     function(num, txt, metas)
         log.info("smsCallback", num, txt, metas and json.encode(metas) or "")
         util_netled.blink(50, 50, 5000)
-        util_notify.send({txt, "", "发件人号码: " .. num, "#SMS"})
+        util_notify.add({txt, "", "发件人号码: " .. num, "#SMS"})
     end
 )
 
@@ -80,7 +80,7 @@ sys.taskInit(
 
         -- 开机通知
         if config.BOOT_NOTIFY then
-            util_notify.send("#BOOT")
+            util_notify.add("#BOOT")
         end
 
         -- 定时查询流量
@@ -97,7 +97,7 @@ sys.taskInit(
         sys.subscribe(
             "POWERKEY_SHORT_PRESS",
             function()
-                util_notify.send("#ALIVE")
+                util_notify.add("#ALIVE")
             end
         )
         -- 电源键长按查询流量

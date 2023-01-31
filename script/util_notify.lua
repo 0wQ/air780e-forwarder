@@ -1,5 +1,10 @@
 local util_notify = {}
 
+-- 在通知内容加入设备信息
+local is_append_more_info = true
+-- 消息队列
+local msg_queue = {}
+
 local function urlencodeTab(params)
     local msg = {}
     for k, v in pairs(params) do
@@ -192,6 +197,39 @@ local function notifyToNextSmtpProxy(msg)
     return util_http.fetch(nil, "POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body))
 end
 
+local function append()
+    local msg = "\n"
+
+    -- 运营商
+    local oper = util_mobile.getOper(true)
+    if oper ~= "" then
+        msg = msg .. "\n运营商: " .. oper
+    end
+
+    -- 信号
+    local rsrp = mobile.rsrp()
+    if rsrp ~= 0 then
+        msg = msg .. "\n信号: " .. rsrp .. "dBm"
+    end
+
+    -- 频段
+    local band = util_mobile.getBand()
+    if band >= 0 then
+        msg = msg .. "\n频段: B" .. band
+    end
+
+    -- 位置
+    local _, _, map_link = util_location.get()
+    if map_link ~= "" then
+        msg = msg .. "\n位置: " .. map_link -- 这里使用 U+00a0 防止换行
+    end
+
+    return msg
+end
+
+--- 发送通知
+-- @param msg 消息内容
+-- @return true: 发送成功 or 出错但无需重试, false: 发送失败, 需要重发
 function util_notify.send(msg)
     log.info("util_notify.send", "发送通知", config.NOTIFY_TYPE)
 
@@ -200,34 +238,15 @@ function util_notify.send(msg)
     end
     if type(msg) ~= "string" then
         log.error("util_notify.send", "发送通知失败", "参数类型错误", type(msg))
-        return
+        return true
+    end
+    if msg == "" then
+        log.error("util_notify.send", "发送通知失败", "消息为空")
+        return true
     end
 
-    local model = hmeta.model() or ""
-    local simid = mobile.simid()
-    local iccid = mobile.iccid(simid) or ""
-    local rsrp = mobile.rsrp()
-    local mcc, mnc, band = util_mobile.mcc, util_mobile.mnc, util_mobile.band
-    local oper = util_mobile.getOper(true)
-    local lat, lng = util_location.getCoord()
-    local map_url = "https://apis.map.qq.com/uri/v1/marker?coord_type=1&marker=title:+;coord:" .. lat .. "," .. lng
-
-    msg = msg .. "\n"
-    if model then
-        msg = msg .. "\nMODEL: " .. model
-    end
-    if iccid then
-        msg = msg .. "\nICCID: " .. iccid
-    end
-    if oper then
-        msg = msg .. "\n运营商: " .. oper
-    end
-    msg = msg .. "\n信号: " .. rsrp .. "dBm"
-    if band ~= "" then
-        msg = msg .. "\n频段: B" .. band
-    end
-    if lat ~= 0 and lng ~= 0 then
-        msg = msg .. "\n位置: " .. map_url
+    if is_append_more_info then
+        msg = msg .. append()
     end
 
     -- 判断通知类型
@@ -248,30 +267,51 @@ function util_notify.send(msg)
         notify = notifyToNextSmtpProxy
     else
         log.error("util_notify.send", "发送通知失败", "未配置 `config.NOTIFY_TYPE`")
-        return
+        return true
     end
 
-    sys.taskInit(
-        function()
-            local max_retry = 10
-            local retry_count = 0
-
-            while retry_count < max_retry do
-                util_netled.blink(50, 50)
-                local code, headers, body = notify(msg)
-                util_netled.blink()
-                if code == 200 then
-                    log.info("util_notify.send", "发送通知成功", "retry_count:", retry_count, "code:", code, "body:", body)
-                    break
-                else
-                    retry_count = retry_count + 1
-                    log.error("util_notify.send", "发送通知失败", "retry_count:", retry_count, "code:", code, "body:", body)
-                    util_netled.blink(500, 200, 3000)
-                    sys.wait(10000)
-                end
-            end
-        end
-    )
+    local code, headers, body = notify(msg)
+    if code == nil then
+        return true
+    end
+    if code == 200 then
+        log.info("util_notify.send", "发送通知成功", "code:", code, "body:", body)
+        return true
+    else
+        log.error("util_notify.send", "发送通知失败", "code:", code, "body:", body)
+        return false
+    end
 end
+
+--- 添加到消息队列
+-- @param msg 消息内容
+function util_notify.add(msg)
+    table.insert(msg_queue, msg)
+    log.debug("util_notify.add", "添加到消息队列, 当前队列长度:", #msg_queue)
+end
+
+-- 轮询消息队列
+-- 发送成功则从消息队列中删除
+-- 发送失败则等待下次轮询
+local function poll()
+    local msg
+    while true do
+        -- 消息队列非空, 且网络已注册
+        if #msg_queue > 0 and mobile.status() == 1 then
+            log.debug("util_notify.poll", "轮询消息队列中...", "当前队列长度:", #msg_queue)
+            msg = msg_queue[1]
+            if util_notify.send(msg) then
+                table.remove(msg_queue, 1)
+                sys.wait(100)
+            else
+                sys.wait(2000)
+            end
+        else
+            sys.wait(350)
+        end
+    end
+end
+
+sys.taskInit(poll)
 
 return util_notify
