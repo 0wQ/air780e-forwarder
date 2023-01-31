@@ -1,54 +1,55 @@
-local util_mobile = {mcc = 99, mnc = 99, band = 99}
+local util_mobile = {}
 
--- 查询流量代码
-local trafficCode = {
-    CU = {"10010", "2082"},
-    CM = {"10086", "CXLL"},
-    CT = {"10001", "108"}
+-- 运营商数据
+local oper_data = {
+    ["46000"] = {"CM", "中国移动", {"10086", "CXLL"}},
+    ["46001"] = {"CU", "中国联通", {"10010", "2082"}},
+    ["46011"] = {"CT", "中国电信"},
+    ["46015"] = {"CB", "中国广电"}
 }
 
--- 获取运营商
+--- 获取 MCC 和 MNC
+-- @return MCC or -1
+-- @return MNC or -1
+function util_mobile.getMccMnc()
+    local imsi = mobile.imsi(mobile.simid()) or ""
+    return string.sub(imsi, 1, 3) or -1, string.sub(imsi, 4, 5) or -1
+end
+
+--- 获取 Band
+-- @return Band or -1
+function util_mobile.getBand()
+    local info = mobile.getCellInfo()[1] or {}
+    return info.band or -1
+end
+
+--- 获取运营商
+-- @param is_zh 是否返回中文
+-- @return 运营商 or ""
 function util_mobile.getOper(is_zh)
-    if util_mobile.mcc ~= 460 then
-        return ""
-    end
+    local imsi = mobile.imsi(mobile.simid()) or ""
+    local mcc, mnc = string.sub(imsi, 1, 3), string.sub(imsi, 4, 5)
+    local mcc_mnc = mcc .. mnc
 
-    if util_mobile.mnc == 1 then
-        return is_zh and "中国联通" or "CU"
-    end
-
-    if util_mobile.mnc == 0 then
-        return is_zh and "中国移动" or "CM"
-    end
-
-    if util_mobile.mnc == 11 then
-        return is_zh and "中国电信" or "CT"
-    end
-
-    if util_mobile.mnc == 15 then
-        return is_zh and "中国广电" or "CB"
-    end
-
-    return ""
-end
-
--- 发送查询流量短信
-function util_mobile.queryTraffic()
-    local oper = util_mobile.getOper()
-    if oper and trafficCode[oper] then
-        sms.send(trafficCode[oper][1], trafficCode[oper][2])
+    local oper = oper_data[mcc_mnc]
+    if oper then
+        return is_zh and oper[2] or oper[1]
     else
-        log.warn("queryTraffic", "查询流量代码未配置")
+        return mcc_mnc
     end
 end
 
-sys.subscribe(
-    "CELL_INFO_UPDATE",
-    function()
-        local info = mobile.getCellInfo()[1] or {}
-        util_mobile.mcc, util_mobile.mnc, util_mobile.band = info.mcc, info.mnc, info.band
-        log.info("cell", "mcc:", util_mobile.mcc, "mnc:", util_mobile.mnc, "band:", util_mobile.band)
+--- 发送查询流量短信
+function util_mobile.queryTraffic()
+    local imsi = mobile.imsi(mobile.simid()) or ""
+    local mcc_mnc = string.sub(imsi, 1, 5)
+
+    local oper = oper_data[mcc_mnc]
+    if oper and oper[3] then
+        sms.send(oper[3][1], oper[3][2])
+    else
+        log.warn("util_mobile.queryTraffic", "查询流量代码未配置")
     end
-)
+end
 
 return util_mobile
