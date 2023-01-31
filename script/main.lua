@@ -24,30 +24,34 @@ socket.setDNS(nil, 2, "223.5.5.5")
 mobile.setAuto(1000 * 10, 1000 * 60, 1000 * 5)
 
 -- POWERKEY
-local powerkey_timer = 0
+local button_last_press_time, button_last_release_time = 0, 0
 gpio.setup(
     35,
     function()
-        local powerkey_state = gpio.get(35)
-        if powerkey_state == 0 then
-            powerkey_timer = os.time()
-        else
-            if powerkey_timer == 0 then
-                return
-            end
-            local time = os.time() - powerkey_timer
-            if time >= 2 then
-                log.info("POWERKEY_LONG_PRESS", time)
-                sys.publish("POWERKEY_LONG_PRESS")
-            else
-                log.info("POWERKEY_SHORT_PRESS", time)
-                sys.publish("POWERKEY_SHORT_PRESS")
-            end
-            powerkey_timer = 0
+        local current_time = mcu.ticks()
+        -- 按下
+        if gpio.get(35) == 0 then
+            button_last_press_time = current_time -- 记录最后一次按下时间
+            return
+        end
+        -- 释放
+        if button_last_press_time == 0 then -- 开机前已经按下, 开机后释放
+            return
+        end
+        if current_time - button_last_release_time < 250 then -- 防止连按
+            return
+        end
+        local duration = current_time - button_last_press_time -- 按键持续时间
+        button_last_release_time = current_time -- 记录最后一次释放时间
+        if duration > 2000 then
+            log.debug("EVENT.POWERKEY_LONG_PRESS", duration)
+            sys.publish("POWERKEY_LONG_PRESS", duration)
+        elseif duration > 50 then
+            log.debug("EVENT.POWERKEY_SHORT_PRESS", duration)
+            sys.publish("POWERKEY_SHORT_PRESS", duration)
         end
     end,
-    gpio.PULLUP,
-    gpio.FALLING
+    gpio.PULLUP
 )
 
 config = require "config"
