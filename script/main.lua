@@ -20,8 +20,8 @@ end
 socket.setDNS(nil, 1, "119.29.29.29")
 socket.setDNS(nil, 2, "223.5.5.5")
 
--- 设置 SIM 自动恢复, 搜索小区信息间隔, 最大搜索时间
-mobile.setAuto(1000 * 10, 1000 * 60, 1000 * 5)
+-- 设置 SIM 自动恢复(单位: 毫秒), 搜索小区信息间隔(单位: 毫秒), 最大搜索时间(单位: 秒)
+mobile.setAuto(1000 * 10)
 
 -- POWERKEY
 local button_last_press_time, button_last_release_time = 0, 0
@@ -78,15 +78,6 @@ sys.taskInit(
 
         util_netled.init()
 
-        -- 开机基站定位
-        util_location.getCoord(
-            function()
-                log.info("publish", "COORD_INIT_DONE")
-                sys.publish("COORD_INIT_DONE")
-            end
-        )
-        sys.waitUntil("COORD_INIT_DONE", 1000 * 20)
-
         -- 开机通知
         if config.BOOT_NOTIFY then
             util_notify.send("#BOOT")
@@ -98,8 +89,8 @@ sys.taskInit(
         end
 
         -- 定时基站定位
-        if config.LOCATION_INTERVAL and config.LOCATION_INTERVAL >= 1000 * 10 then
-            sys.timerLoopStart(util_location.getCoord, config.LOCATION_INTERVAL)
+        if config.LOCATION_INTERVAL and config.LOCATION_INTERVAL >= 1000 * 30 then
+            sys.timerLoopStart(util_location.refresh, config.LOCATION_INTERVAL, 30)
         end
 
         -- 电源键短按发送测试通知
