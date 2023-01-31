@@ -95,7 +95,7 @@ local function notifyToDingTalk(msg)
     -- LuatOS Bug, json.encode 会将 \n 转换为 \b
     json_data = string.gsub(json_data, "\\b", "\\n")
 
-    log.info("util_notify.notifyToDingTalk", "POST", config.DINGTALK_WEBHOOK, json_data)
+    log.info("util_notify.notifyToDingTalk", "POST", config.DINGTALK_WEBHOOK)
     return util_http.fetch(nil, "POST", config.DINGTALK_WEBHOOK, header, json_data)
 end
 
@@ -119,7 +119,7 @@ local function notifyToFeishu(msg)
     -- LuatOS Bug, json.encode 会将 \n 转换为 \b
     json_data = string.gsub(json_data, "\\b", "\\n")
 
-    log.info("util_notify.notifyToFeishu", "POST", config.FEISHU_WEBHOOK, json_data)
+    log.info("util_notify.notifyToFeishu", "POST", config.FEISHU_WEBHOOK)
     return util_http.fetch(nil, "POST", config.FEISHU_WEBHOOK, header, json_data)
 end
 
@@ -143,7 +143,7 @@ local function notifyToWeCom(msg)
     -- LuatOS Bug, json.encode 会将 \n 转换为 \b
     json_data = string.gsub(json_data, "\\b", "\\n")
 
-    log.info("util_notify.notifyToWeCom", "POST", config.WECOM_WEBHOOK, json_data)
+    log.info("util_notify.notifyToWeCom", "POST", config.WECOM_WEBHOOK)
     return util_http.fetch(nil, "POST", config.WECOM_WEBHOOK, header, json_data)
 end
 
@@ -188,7 +188,7 @@ local function notifyToNextSmtpProxy(msg)
         text = msg
     }
 
-    log.info("util_notify.notifyToNextSmtpProxy", "POST", config.NEXT_SMTP_PROXY_API, urlencodeTab(body))
+    log.info("util_notify.notifyToNextSmtpProxy", "POST", config.NEXT_SMTP_PROXY_API)
     return util_http.fetch(nil, "POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body))
 end
 
