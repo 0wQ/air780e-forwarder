@@ -200,6 +200,24 @@ end
 local function append()
     local msg = "\n"
 
+    -- 本机号码
+    local number = mobile.number(mobile.simid())
+    if number then
+        msg = msg .. "\n本机号码: " .. number
+    end
+
+    -- 开机时长
+    local ms = mcu.ticks()
+    local seconds = math.floor(ms / 1000)
+    local minutes = math.floor(seconds / 60)
+    local hours = math.floor(minutes / 60)
+    seconds = seconds % 60
+    minutes = minutes % 60
+    local boot_time = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+    if ms >= 0 then
+        msg = msg .. "\n开机时长: " .. boot_time
+    end
+
     -- 运营商
     local oper = util_mobile.getOper(true)
     if oper ~= "" then
