@@ -12,8 +12,9 @@ local netled_inited = false
 sys.taskInit(
     function()
         local nums = {0, 1, 2, 4, 6, 12, 16, 21, 27, 34, 42, 51, 61, 72, 85, 100, 100}
+        local len = #nums
         while true do
-            for i = 1, #nums, 1 do
+            for i = 1, len, 1 do
                 pwm.open(4, 1000, nums[i])
                 result = sys.waitUntil("NET_LED_INIT", 25)
                 if result then
@@ -21,7 +22,7 @@ sys.taskInit(
                     return
                 end
             end
-            for i = #nums, 1, -1 do
+            for i = len, 1, -1 do
                 pwm.open(4, 1000, nums[i])
                 result = sys.waitUntil("NET_LED_INIT", 25)
                 if result then
