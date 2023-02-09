@@ -20,6 +20,9 @@ socket.setDNS(nil, 2, "223.5.5.5")
 -- 设置 SIM 自动恢复(单位: 毫秒), 搜索小区信息间隔(单位: 毫秒), 最大搜索时间(单位: 秒)
 mobile.setAuto(1000 * 10)
 
+-- 开启 IPv6
+mobile.ipv6(true)
+
 -- POWERKEY
 local button_last_press_time, button_last_release_time = 0, 0
 gpio.setup(
