@@ -292,7 +292,7 @@ function util_notify.send(msg)
     if code == nil then
         return true
     end
-    if code == 200 then
+    if code >= 200 and code < 500 then
         log.info("util_notify.send", "发送通知成功", "code:", code, "body:", body)
         return true
     else
@@ -305,6 +305,7 @@ end
 -- @param msg 消息内容
 function util_notify.add(msg)
     table.insert(msg_queue, msg)
+    sys.publish("NEW_MSG")
     log.debug("util_notify.add", "添加到消息队列, 当前队列长度:", #msg_queue)
 end
 
@@ -315,17 +316,17 @@ local function poll()
     local msg
     while true do
         -- 消息队列非空, 且网络已注册
-        if #msg_queue > 0 and mobile.status() == 1 then
-            log.debug("util_notify.poll", "轮询消息队列中...", "当前队列长度:", #msg_queue)
+        if next(msg_queue) ~= nil and mobile.status() == 1 then
+            log.debug("util_notify.poll", "轮询消息队列中, 当前队列长度:", #msg_queue)
             msg = msg_queue[1]
             if util_notify.send(msg) then
                 table.remove(msg_queue, 1)
-                sys.wait(100)
+                sys.wait(50)
             else
                 sys.wait(2000)
             end
         else
-            sys.wait(350)
+            sys.waitUntil("NEW_MSG", 1000 * 10)
         end
     end
 end
