@@ -1,6 +1,6 @@
 # Air780E 短信转发
 
-## Feature
+## :sparkles: Feature
 
 - [x] 多种通知方式
     - [x] [Telegram](https://github.com/0wQ/telegram-notify)
@@ -16,16 +16,18 @@
 - [x] 定时查询流量
 - [x] 开机通知
 - [x] POW 按键长按短按操作
-- [x] 低功耗模式 (待机大概 1mA 左右, USB 电流表精度太低了测不到😅)
+- [x] 低功耗模式 (使用 IoT Power 测量, 开发板待机 30min 平均电流 2.5mA)
 - [x] 使用消息队列, 经测试同时发送几百条通知, 不会卡死
 - [x] 通知发送失败, 自动重发
 
-## Usage
+## :hammer: Usage
 
 ### 1. 按注释修改 `script/config.lua` 配置文件
 
 ### 2. 烧录脚本
 
-> 推荐使用根目录下的 `LuatOS-SoC_xxx.soc` 固件
+> 推荐使用 `core` 目录下的固件, 本项目可能会使用一些合宙官方固件还未更新的 API
+>
+> `core` 目录下文件名中带有 `RNDIS` 的, 支持 RNDIS 网卡功能, 如果 SIM 卡流量不多请勿选择
 
 根据 [air780e.cn](http://air780e.cn) 官方指引下载 LuaTools 并写入 `script` 目录下文件
