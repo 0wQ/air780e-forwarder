@@ -43,6 +43,9 @@ return {
     -- 开机通知 (会消耗流量)
     BOOT_NOTIFY = true,
     --
+    -- 通知内容追加更多信息 (通知内容增加会导致流量消耗增加)
+    NOTIFY_APPEND_MORE_INFO = true,
+    --
     -- 开启低功耗模式, USB 断开连接无法查看日志, RNDIS 网卡会断开
     LOW_POWER_MODE = false,
 }

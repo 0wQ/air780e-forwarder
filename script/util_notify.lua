@@ -1,7 +1,5 @@
 local util_notify = {}
 
--- 在通知内容加入设备信息
-local is_append_more_info = true
 -- 消息队列
 local msg_queue = {}
 
@@ -263,7 +261,7 @@ function util_notify.send(msg)
         return true
     end
 
-    if is_append_more_info then
+    if config.NOTIFY_APPEND_MORE_INFO then
         msg = msg .. append()
     end
 
