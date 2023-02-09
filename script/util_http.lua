@@ -23,16 +23,11 @@ function util_http.fetch(timeout, method, url, headers, body)
 
     util_netled.blink(50, 50)
 
-    sys.taskInit(
-        function()
-            log.debug("util_http.fetch", "开始请求", "id:", id)
-            res_code, res_headers, res_body = http.request(method, url, headers, body, opts).wait()
-            log.debug("util_http.fetch", "请求结束", "id:", id, "code:", res_code)
-            sys.publish(id)
-        end
-    )
-    local result = sys.waitUntil(id, timeout + 1000 * 25)
-    if not result or res_code == -8 then
+    log.debug("util_http.fetch", "开始请求", "id:", id)
+    res_code, res_headers, res_body = http.request(method, url, headers, body, opts).wait()
+    log.debug("util_http.fetch", "请求结束", "id:", id, "code:", res_code)
+
+    if res_code == -8 then
         log.warn("util_http.fetch", "请求超时", "id:", id)
     end
 
