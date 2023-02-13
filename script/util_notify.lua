@@ -208,6 +208,12 @@ local function notifyToInotify(msg)
 
     local url = config.INOTIFY_API .. "/" .. string.urlEncode(msg)
 
+    -- 截断过长的消息
+    if #url > 990 then
+        log.warn("util_notify.notifyToInotify", "消息过长已截断")
+        url = string.sub(url, 1, 990) .. "%0A%0A消息过长已截断..."
+    end
+
     log.info("util_notify.notifyToInotify", "GET", url)
     return util_http.fetch(nil, "GET", url)
 end
