@@ -1,5 +1,5 @@
 return {
-    -- 通知类型 telegram, pushdeer, bark, dingtalk, feishu, wecom, next-smtp-proxy
+    -- 通知类型 telegram, pushdeer, bark, dingtalk, feishu, wecom, next-smtp-proxy, inotify
     NOTIFY_TYPE = "pushdeer",
     --
     -- telegram 通知配置, https://github.com/0wQ/telegram-notify
@@ -33,6 +33,9 @@ return {
     NEXT_SMTP_PROXY_FORM_NAME = "Air780E",
     NEXT_SMTP_PROXY_TO_EMAIL = "",
     NEXT_SMTP_PROXY_SUBJECT = "来自 Air780E 的通知",
+    --
+    -- inotify 通知配置, https://github.com/xpnas/Inotify 可以自建或者使用 LuatOS 社区提供的 https://push.luatos.org
+    INOTIFY_API = "https://push.luatos.org/XXXXXX.send",
     --
     -- 定时查询流量间隔, 单位毫秒, 设置为 0 关闭 (建议检查 util_mobile.lua 文件中运营商号码和查询代码是否正确, 以免发错短信导致扣费, 收到查询结果短信发送通知会消耗流量)
     QUERY_TRAFFIC_INTERVAL = 1000 * 60 * 60 * 6,

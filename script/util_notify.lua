@@ -195,6 +195,23 @@ local function notifyToNextSmtpProxy(msg)
     return util_http.fetch(nil, "POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body))
 end
 
+-- 发送到 inotify
+local function notifyToInotify(msg)
+    if config.INOTIFY_API == nil or config.INOTIFY_API == "" then
+        log.error("util_notify.notifyToInotify", "未配置 `config.INOTIFY_API`")
+        return
+    end
+    if not config.INOTIFY_API:endsWith(".send") then
+        log.error("util_notify.notifyToInotify", "配置 `config.INOTIFY_API` 必须以 `.send` 结尾")
+        return
+    end
+
+    local url = config.INOTIFY_API .. "/" .. string.urlEncode(msg)
+
+    log.info("util_notify.notifyToInotify", "GET", url)
+    return util_http.fetch(nil, "GET", url)
+end
+
 local function append()
     local msg = "\n"
 
@@ -281,6 +298,8 @@ function util_notify.send(msg)
         notify = notifyToWeCom
     elseif config.NOTIFY_TYPE == "next-smtp-proxy" then
         notify = notifyToNextSmtpProxy
+    elseif config.NOTIFY_TYPE == "inotify" then
+        notify = notifyToInotify
     else
         log.error("util_notify.send", "发送通知失败", "未配置 `config.NOTIFY_TYPE`")
         return true

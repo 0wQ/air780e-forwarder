@@ -10,6 +10,7 @@
     - [x] [飞书群机器人 Feishu](https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN)
     - [x] [企业微信群机器人 WeCom](https://developer.work.weixin.qq.com/document/path/91770)
     - [x] [邮件 next-smtp-proxy](https://github.com/0wQ/next-smtp-proxy)
+    - [x] [inotify](https://github.com/xpnas/Inotify) / [LuatOS 社区提供的推送服务](https://push.luatos.org)
 - [x] 通过短信控制设备
     - [x] 发短信, 格式: `SMS,10010,余额查询`
 - [x] 定时基站定位
