@@ -46,6 +46,9 @@ return {
     -- 通知内容追加更多信息 (通知内容增加会导致流量消耗增加)
     NOTIFY_APPEND_MORE_INFO = true,
     --
+    -- 通知最大重发次数
+    NOTIFY_RETRY_MAX = 100,
+    --
     -- 开启低功耗模式, USB 断开连接无法查看日志, RNDIS 网卡会断开
     LOW_POWER_MODE = false,
 }

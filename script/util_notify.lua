@@ -245,7 +245,7 @@ end
 
 --- 发送通知
 -- @param msg 消息内容
--- @return true: 发送成功 or 出错但无需重试, false: 发送失败, 需要重发
+-- @return true: 无需重发, false: 需要重发
 function util_notify.send(msg)
     log.info("util_notify.send", "发送通知", config.NOTIFY_TYPE)
 
@@ -288,21 +288,37 @@ function util_notify.send(msg)
 
     local code, headers, body = notify(msg)
     if code == nil then
+        log.info("util_notify.send", "发送通知失败, 无需重发", "code:", code, "body:", body)
         return true
     end
-    if code >= 200 and code < 500 then
+    if code == -6 then
+        -- 发生在 url 过长时, 重发也不会成功
+        log.info("util_notify.send", "发送通知失败, 无需重发", "code:", code, "body:", body)
+        return true
+    end
+    if code >= 200 and code < 300 then
+        -- http 2xx 成功
         log.info("util_notify.send", "发送通知成功", "code:", code, "body:", body)
         return true
-    else
-        log.error("util_notify.send", "发送通知失败", "code:", code, "body:", body)
-        return false
     end
+    if code >= 300 and code < 400 then
+        -- http 3xx 重定向, 重发也不会成功
+        log.info("util_notify.send", "发送通知失败, 无需重发", "code:", code, "body:", body)
+        return true
+    end
+    if code >= 400 and code < 500 then
+        -- http 4xx 客户端错误, 重发也不会成功
+        log.info("util_notify.send", "发送通知失败, 无需重发", "code:", code, "body:", body)
+        return true
+    end
+    log.error("util_notify.send", "发送通知失败, 等待重发", "code:", code, "body:", body)
+    return false
 end
 
 --- 添加到消息队列
 -- @param msg 消息内容
 function util_notify.add(msg)
-    table.insert(msg_queue, msg)
+    table.insert(msg_queue, {msg = msg, retry = 0})
     sys.publish("NEW_MSG")
     log.debug("util_notify.add", "添加到消息队列, 当前队列长度:", #msg_queue)
 end
@@ -311,18 +327,28 @@ end
 -- 发送成功则从消息队列中删除
 -- 发送失败则等待下次轮询
 local function poll()
-    local msg
+    local item, result
     while true do
         -- 消息队列非空, 且网络已注册
         if next(msg_queue) ~= nil and mobile.status() == 1 then
             log.debug("util_notify.poll", "轮询消息队列中, 当前队列长度:", #msg_queue)
-            msg = msg_queue[1]
-            if util_notify.send(msg) then
-                table.remove(msg_queue, 1)
-                sys.wait(50)
+
+            item = msg_queue[1]
+            table.remove(msg_queue, 1)
+
+            if item.retry > (config.NOTIFY_RETRY_MAX or 100) then
+                log.error("util_notify.poll", "超过最大重发次数", "msg:", item.msg)
             else
-                sys.wait(2000)
+                result = util_notify.send(item.msg)
+                item.retry = item.retry + 1
+
+                if not result then
+                    -- 发送失败, 移到队尾
+                    table.insert(msg_queue, item)
+                    sys.wait(5000)
+                end
             end
+            sys.wait(50)
         else
             sys.waitUntil("NEW_MSG", 1000 * 10)
         end
