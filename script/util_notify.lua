@@ -163,12 +163,12 @@ local function notifyToPushover(msg)
     end
 
     local header = {
-        ["Content-Type"] = "application/x-www-form-urlencoded"
+        ["Content-Type"] = "application/json; charset=utf-8"
     }
     local body = {
         token = config.PUSHOVER_API_TOKEN,
         user = config.PUSHOVER_USER_KEY,
-        text = msg
+        message = msg
     }
 
     local json_data = json.encode(body)
