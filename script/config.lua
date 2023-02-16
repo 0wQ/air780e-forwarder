@@ -1,5 +1,6 @@
 return {
-    -- 通知类型 telegram, pushdeer, bark, dingtalk, feishu, wecom, pushover, next-smtp-proxy
+    -- 通知类型, 支持配置多个
+    -- NOTIFY_TYPE = {"telegram", "pushdeer", "bark", "dingtalk", "feishu", "wecom", "pushover", "next-smtp-proxy"},
     NOTIFY_TYPE = "pushdeer",
     --
     -- telegram 通知配置, https://github.com/0wQ/telegram-notify
