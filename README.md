@@ -9,6 +9,7 @@
     - [x] [钉钉群机器人 DingTalk](https://open.dingtalk.com/document/robots/custom-robot-access)
     - [x] [飞书群机器人 Feishu](https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN)
     - [x] [企业微信群机器人 WeCom](https://developer.work.weixin.qq.com/document/path/91770)
+    - [x] [Pushover](https://pushover.net/api)
     - [x] [邮件 next-smtp-proxy](https://github.com/0wQ/next-smtp-proxy)
 - [x] 通过短信控制设备
     - [x] 发短信, 格式: `SMS,10010,余额查询`

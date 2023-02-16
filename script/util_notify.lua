@@ -150,6 +150,38 @@ local function notifyToWeCom(msg)
     return util_http.fetch(nil, "POST", config.WECOM_WEBHOOK, header, json_data)
 end
 
+
+-- 发送到 pushover
+local function notifyToPushover(msg)
+    if config.PUSHOVER_API_TOKEN == nil or config.PUSHOVER_API_TOKEN == "" then
+        log.error("util_notify.notifyToPushover", "未配置 `config.PUSHOVER_API_TOKEN`")
+        return
+    end
+    if config.PUSHOVER_USER_KEY == nil or config.PUSHOVER_USER_KEY== "" then
+        log.error("util_notify.notifyToPushover", "未配置 `config.PUSHOVER_USER_KEY`")
+        return
+    end
+
+    local header = {
+        ["Content-Type"] = "application/json; charset=utf-8"
+    }
+    local body = {
+        token = config.PUSHOVER_API_TOKEN,
+        user = config.PUSHOVER_USER_KEY,
+        message = msg
+    }
+
+    local json_data = json.encode(body)
+    -- LuatOS Bug, json.encode 会将 \n 转换为 \b
+    json_data = string.gsub(json_data, "\\b", "\\n")
+
+    local url = "https://api.pushover.net/1/messages.json"
+
+    log.info("util_notify.notifyToPushover", "POST", config.PUSHOVER_API_TOKEN)
+    return util_http.fetch(nil, "POST", url, header, json_data)
+end
+
+
 -- 发送到 next-smtp-proxy
 local function notifyToNextSmtpProxy(msg)
     if config.NEXT_SMTP_PROXY_API == nil or config.NEXT_SMTP_PROXY_API == "" then
@@ -279,6 +311,8 @@ function util_notify.send(msg)
         notify = notifyToFeishu
     elseif config.NOTIFY_TYPE == "wecom" then
         notify = notifyToWeCom
+    elseif config.NOTIFY_TYPE == "pushover" then
+        notify = notifyToPushover
     elseif config.NOTIFY_TYPE == "next-smtp-proxy" then
         notify = notifyToNextSmtpProxy
     else
