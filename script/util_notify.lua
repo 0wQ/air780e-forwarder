@@ -174,6 +174,22 @@ local notify = {
         log.info("util_notify", "POST", url)
         return util_http.fetch(nil, "POST", url, header, json_data)
     end,
+    -- 发送到 inotify
+    ["inotify"] = function(msg)
+        if config.INOTIFY_API == nil or config.INOTIFY_API == "" then
+            log.error("util_notify", "未配置 `config.INOTIFY_API`")
+            return
+        end
+        if not config.INOTIFY_API:endsWith(".send") then
+            log.error("util_notify", "`config.INOTIFY_API` 必须以 `.send` 结尾")
+            return
+        end
+
+        local url = config.INOTIFY_API .. "/" .. string.urlEncode(msg)
+
+        log.info("util_notify", "GET", url)
+        return util_http.fetch(nil, "GET", url)
+    end,
     -- 发送到 next-smtp-proxy
     ["next-smtp-proxy"] = function(msg)
         if config.NEXT_SMTP_PROXY_API == nil or config.NEXT_SMTP_PROXY_API == "" then

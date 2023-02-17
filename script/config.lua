@@ -1,6 +1,6 @@
 return {
     -- 通知类型, 支持配置多个
-    -- NOTIFY_TYPE = {"telegram", "pushdeer", "bark", "dingtalk", "feishu", "wecom", "pushover", "next-smtp-proxy"},
+    -- NOTIFY_TYPE = {"telegram", "pushdeer", "bark", "dingtalk", "feishu", "wecom", "pushover", "inotify", "next-smtp-proxy"},
     NOTIFY_TYPE = "pushdeer",
     --
     -- telegram 通知配置, https://github.com/0wQ/telegram-notify
@@ -29,6 +29,8 @@ return {
     PUSHOVER_API_TOKEN = "",
     PUSHOVER_USER_KEY = "",
     --
+    -- inotify 通知配置, https://github.com/xpnas/Inotify 或者使用合宙提供的 https://push.luatos.org
+    INOTIFY_API = "https://push.luatos.org/XXXXXX.send",
     -- next-smtp-proxy 通知配置, https://github.com/0wQ/next-smtp-proxy
     NEXT_SMTP_PROXY_API = "",
     NEXT_SMTP_PROXY_USER = "",
