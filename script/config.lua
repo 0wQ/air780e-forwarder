@@ -31,6 +31,7 @@ return {
     --
     -- inotify 通知配置, https://github.com/xpnas/Inotify 或者使用合宙提供的 https://push.luatos.org
     INOTIFY_API = "https://push.luatos.org/XXXXXX.send",
+    --
     -- next-smtp-proxy 通知配置, https://github.com/0wQ/next-smtp-proxy
     NEXT_SMTP_PROXY_API = "",
     NEXT_SMTP_PROXY_USER = "",
@@ -42,10 +43,10 @@ return {
     NEXT_SMTP_PROXY_SUBJECT = "来自 Air780E 的通知",
     --
     -- 定时查询流量间隔, 单位毫秒, 设置为 0 关闭 (建议检查 util_mobile.lua 文件中运营商号码和查询代码是否正确, 以免发错短信导致扣费, 收到查询结果短信发送通知会消耗流量)
-    QUERY_TRAFFIC_INTERVAL = 1000 * 60 * 60 * 6,
+    QUERY_TRAFFIC_INTERVAL = 0,
     --
     -- 定时基站定位间隔, 单位毫秒, 设置为 0 关闭 (定位成功后会追加到通知内容后面, 基站定位本身会消耗流量, 通知内容增加也会导致流量消耗增加)
-    LOCATION_INTERVAL = 1000 * 60 * 30,
+    LOCATION_INTERVAL = 0,
     --
     -- 开机通知 (会消耗流量)
     BOOT_NOTIFY = true,
@@ -54,7 +55,7 @@ return {
     NOTIFY_APPEND_MORE_INFO = true,
     --
     -- 通知最大重发次数
-    NOTIFY_RETRY_MAX = 100,
+    NOTIFY_RETRY_MAX = 20,
     --
     -- 开启低功耗模式, USB 断开连接无法查看日志, RNDIS 网卡会断开
     LOW_POWER_MODE = false,
