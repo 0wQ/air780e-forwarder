@@ -31,6 +31,31 @@ local notify = {
         log.info("util_notify", "POST", config.TELEGRAM_PROXY_API)
         return util_http.fetch(nil, "POST", config.TELEGRAM_PROXY_API, header, msg)
     end,
+    -- 发送到 gotify
+    ["gotify"] = function(msg)
+        if config.GOTIFY_API == nil or config.GOTIFY_API == "" then
+            log.error("util_notify", "未配置 `config.GOTIFY_API`")
+            return
+        end
+        if config.GOTIFY_TOKEN == nil or config.GOTIFY_TOKEN == "" then
+            log.error("util_notify", "未配置 `config.GOTIFY_TOKEN`")
+            return
+        end
+
+        local header = {
+            ["Content-Type"] = "application/json; charset=utf-8"
+        }
+        local body = {
+            title = config.GOTIFY_TITLE,
+            message = msg,
+            priority = config.GOTIFY_PRIORITY
+        }
+        local json_data = json.encode(body)
+        json_data = string.gsub(json_data, "\\b", "\\n")
+
+        log.info("util_notify", "POST", config.GOTIFY_API)
+        return util_http.fetch(nil, "POST", config.GOTIFY_API.."/message?token="..config.GOTIFY_TOKEN, header, json_data)
+    end,
     -- 发送到 pushdeer
     ["pushdeer"] = function(msg)
         if config.PUSHDEER_API == nil or config.PUSHDEER_API == "" then
