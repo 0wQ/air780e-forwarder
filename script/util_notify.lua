@@ -42,6 +42,7 @@ local notify = {
             return
         end
 
+        local url = config.GOTIFY_API .. "/message?token=" .. config.GOTIFY_TOKEN
         local header = {
             ["Content-Type"] = "application/json; charset=utf-8"
         }
@@ -54,7 +55,7 @@ local notify = {
         json_data = string.gsub(json_data, "\\b", "\\n")
 
         log.info("util_notify", "POST", config.GOTIFY_API)
-        return util_http.fetch(nil, "POST", config.GOTIFY_API.."/message?token="..config.GOTIFY_TOKEN, header, json_data)
+        return util_http.fetch(nil, "POST", url, header, json_data)
     end,
     -- 发送到 pushdeer
     ["pushdeer"] = function(msg)
