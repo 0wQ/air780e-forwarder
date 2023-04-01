@@ -41,6 +41,12 @@ return {
     NEXT_SMTP_PROXY_TO_EMAIL = "",
     NEXT_SMTP_PROXY_SUBJECT = "来自 Air780E 的通知",
     --
+    -- gotify 通知配置, https://gotify.net/
+    GOTIFY_API = "",
+    GOTIFY_TITLE = "Air780E",
+    GOTIFY_PRIORITY = 8,
+    GOTIFY_TOKEN = "",
+    --
     -- 定时查询流量间隔, 单位毫秒, 设置为 0 关闭 (建议检查 util_mobile.lua 文件中运营商号码和查询代码是否正确, 以免发错短信导致扣费, 收到查询结果短信发送通知会消耗流量)
     QUERY_TRAFFIC_INTERVAL = 1000 * 60 * 60 * 6,
     --
