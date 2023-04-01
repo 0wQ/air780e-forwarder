@@ -1,4 +1,4 @@
-# Air780E 短信转发
+# Air700E / Air780E / Air780EG 短信转发
 
 ## :sparkles: Feature
 
