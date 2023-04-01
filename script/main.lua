@@ -127,14 +127,13 @@ sys.taskInit(
             sys.wait(1000 * 15)
             log.warn("main", "即将关闭 usb 电源, 如需查看日志请在配置中关闭低功耗模式")
             sys.wait(1000 * 5)
-
-            -- 关闭 USB
-            pm.power(pm.USB, false)
+            gpio.setup(23, nil)
+            gpio.close(33)
+            pm.power(pm.USB, false) -- 关闭 USB
             pm.power(pm.GPS, false)
             pm.power(pm.GPS_ANT, false)
             pm.power(pm.DAC_EN, false)
-            -- 休眠
-            pm.force(pm.LIGHT)
+            pm.force(pm.LIGHT) -- 进入休眠
         end
     end
 )
