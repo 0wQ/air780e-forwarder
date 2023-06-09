@@ -14,6 +14,46 @@ local function urlencodeTab(params)
 end
 
 local notify = {
+    -- 发送到 custom_post
+    ["custom_post"] = function(msg)
+        if config.CUSTOM_POST_URL == nil or config.CUSTOM_POST_URL == "" then
+            log.error("util_notify", "未配置 `config.CUSTOM_POST_URL`")
+            return
+        end
+        if type(config.CUSTOM_POST_BODY_TABLE) ~= "table" then
+            log.error("util_notify", "未配置 `config.CUSTOM_POST_BODY_TABLE`")
+            return
+        end
+
+        local header = {
+            ["content-type"] = config.CUSTOM_POST_CONTENT_TYPE
+        }
+
+        local body = config.CUSTOM_POST_BODY_TABLE
+        -- 遍历并替换其中的变量
+        local function traverse_and_replace(t)
+            for k, v in pairs(t) do
+                if type(v) == "table" then
+                    traverse_and_replace(v)
+                elseif type(v) == "string" then
+                    t[k] = string.gsub(v, "{msg}", msg)
+                end
+            end
+        end
+        traverse_and_replace(body)
+
+        -- 根据 content-type 进行编码, 默认为 application/x-www-form-urlencoded
+        if string.find(config.CUSTOM_POST_CONTENT_TYPE, "json") then
+            body = json.encode(body)
+            -- LuatOS Bug, json.encode 会将 \n 转换为 \b
+            body = string.gsub(body, "\\b", "\\n")
+        else
+            body = urlencodeTab(body)
+        end
+
+        log.info("util_notify", "POST", config.CUSTOM_POST_URL, config.CUSTOM_POST_CONTENT_TYPE, body)
+        return util_http.fetch(nil, "POST", config.CUSTOM_POST_URL, header, body)
+    end,
     -- 发送到 telegram
     ["telegram"] = function(msg)
         if config.TELEGRAM_API == nil or config.TELEGRAM_API == "" then
