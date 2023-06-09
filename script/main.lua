@@ -99,7 +99,7 @@ sys.taskInit(
 
         -- 开机通知
         if config.BOOT_NOTIFY then
-            util_notify.add("#BOOT")
+            sys.timerStart(util_notify.add, 1000 * 5, "#BOOT")
         end
 
         -- 定时查询流量
@@ -109,7 +109,8 @@ sys.taskInit(
 
         -- 定时基站定位
         if config.LOCATION_INTERVAL and config.LOCATION_INTERVAL >= 1000 * 30 then
-            sys.timerLoopStart(util_location.refresh, config.LOCATION_INTERVAL, 30)
+            util_location.refresh(nil, true)
+            sys.timerLoopStart(util_location.refresh, config.LOCATION_INTERVAL)
         end
 
         -- 电源键短按发送测试通知
