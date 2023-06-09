@@ -16,20 +16,28 @@ end
 local notify = {
     -- 发送到 telegram
     ["telegram"] = function(msg)
-        if config.TELEGRAM_PROXY_API == nil or config.TELEGRAM_PROXY_API == "" then
-            log.error("util_notify", "未配置 `config.TELEGRAM_PROXY_API`")
+        if config.TELEGRAM_API == nil or config.TELEGRAM_API == "" then
+            log.error("util_notify", "未配置 `config.TELEGRAM_API`")
+            return
+        end
+        if config.TELEGRAM_CHAT_ID == nil or config.TELEGRAM_CHAT_ID == "" then
+            log.error("util_notify", "未配置 `config.TELEGRAM_CHAT_ID`")
             return
         end
 
         local header = {
-            ["content-type"] = "text/plain",
-            ["x-disable-web-page-preview"] = "1",
-            ["x-chat-id"] = config.TELEGRAM_CHAT_ID or "",
-            ["x-token"] = config.TELEGRAM_TOKEN or ""
+            ["content-type"] = "application/json"
         }
+        local body = {
+            ["chat_id"] = config.TELEGRAM_CHAT_ID,
+            ["disable_web_page_preview"] = true,
+            ["text"] = msg
+        }
+        local json_data = json.encode(body)
+        json_data = string.gsub(json_data, "\\b", "\\n")
 
-        log.info("util_notify", "POST", config.TELEGRAM_PROXY_API)
-        return util_http.fetch(nil, "POST", config.TELEGRAM_PROXY_API, header, msg)
+        log.info("util_notify", "POST", config.TELEGRAM_API)
+        return util_http.fetch(nil, "POST", config.TELEGRAM_API, header, json_data)
     end,
     -- 发送到 gotify
     ["gotify"] = function(msg)
