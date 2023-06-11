@@ -29,7 +29,7 @@ local notify = {
             ["content-type"] = config.CUSTOM_POST_CONTENT_TYPE
         }
 
-        local body = config.CUSTOM_POST_BODY_TABLE
+        local body = json.decode(json.encode(config.CUSTOM_POST_BODY_TABLE))
         -- 遍历并替换其中的变量
         local function traverse_and_replace(t)
             for k, v in pairs(t) do
