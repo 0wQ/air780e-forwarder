@@ -307,6 +307,14 @@ local notify = {
 
         log.info("util_notify", "POST", config.NEXT_SMTP_PROXY_API)
         return util_http.fetch(nil, "POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body))
+    end,
+    -- 发送到 serial
+    ["serial"] = function(msg)
+        uart.write(1, msg)
+        log.info("util_notify", msg)
+        log.info("util_notify", "消息已转发到串口")
+        sys.wait(1000)
+        return 200
     end
 }
 
@@ -399,7 +407,14 @@ function util_notify.send(msg, channel)
     end
 
     -- 通知内容追加更多信息
-    if config.NOTIFY_APPEND_MORE_INFO then
+    -- 若已经包含则不再追加
+    local isappend = true
+    if string.find(msg,"本机号码:") and string.find(msg,"开机时长:") then
+        log.info("util_notify.send", "不追加更多信息")
+        isappend = false
+    end
+
+    if config.NOTIFY_APPEND_MORE_INFO and isappend then
         msg = msg .. append()
     end
 
@@ -444,16 +459,23 @@ function util_notify.add(msg, channels)
     end
     sys.publish("NEW_MSG")
     log.debug("util_notify.add", "添加到消息队列, 当前队列长度:", #msg_queue)
+    log.debug("util_notify.add", "添加到消息队列的内容:", msg)
 end
 
 -- 轮询消息队列
 -- 发送成功则从消息队列中删除
 -- 发送失败则等待下次轮询
 local function poll()
-    local item, result
+    local item, result, roaming
     while true do
         -- 消息队列非空, 且网络已注册
-        if next(msg_queue) ~= nil and mobile.status() == 1 then
+        if next(msg_queue) ~= nil and (mobile.status() == 1 or mobile.status() == 5) then
+            -- 判断是否漫游
+            if mobile.status() == 5 then
+                roaming = true
+            else
+                roaming = false
+            end
             log.debug("util_notify.poll", "轮询消息队列中, 当前队列长度:", #msg_queue)
 
             item = msg_queue[1]
@@ -462,7 +484,12 @@ local function poll()
             if item.retry > (config.NOTIFY_RETRY_MAX or 100) then
                 log.error("util_notify.poll", "超过最大重发次数", "msg:", item.msg)
             else
-                result = util_notify.send(item.msg, item.channel)
+                if roaming then
+                    log.debug("util_notify.poll", "当前设备处于漫游状态只使用 Serial 通信方式")
+                    result = util_notify.send(item.msg, 'serial')
+                else
+                    result = util_notify.send(item.msg, item.channel)
+                end
                 item.retry = item.retry + 1
 
                 if not result then
