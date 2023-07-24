@@ -1,3 +1,5 @@
+local lib_smtp = require "lib_smtp"
+
 local util_notify = {}
 
 -- 消息队列
@@ -308,6 +310,26 @@ local notify = {
         log.info("util_notify", "POST", config.NEXT_SMTP_PROXY_API)
         return util_http.fetch(nil, "POST", config.NEXT_SMTP_PROXY_API, header, urlencodeTab(body))
     end,
+    ["smtp"] = function(msg)
+        local smtp_config = {
+            host = config.SMTP_HOST,
+            port = config.SMTP_PORT,
+            username = config.SMTP_USERNAME,
+            password = config.SMTP_PASSWORD,
+            mail_from = config.SMTP_MAIL_FROM,
+            mail_to = config.SMTP_MAIL_TO,
+            tls_enable = config.SMTP_TLS_ENABLE
+        }
+        local result = lib_smtp.send(msg, config.SMTP_MAIL_SUBJECT, smtp_config)
+        log.info("util_notify", "SMTP", result.success, result.message, result.is_retry)
+        if result.success then
+            return 200, nil, result.message
+        end
+        if result.is_retry then
+            return 500, nil, result.message
+        end
+        return 400, nil, result.message
+    end,
     -- 发送到 serial
     ["serial"] = function(msg)
         uart.write(1, msg)
@@ -315,7 +337,7 @@ local notify = {
         log.info("util_notify", "消息已转发到串口")
         sys.wait(1000)
         return 200
-    end
+    end,
 }
 
 local function append()

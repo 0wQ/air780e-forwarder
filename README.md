@@ -13,6 +13,7 @@
     - [x] [邮件 next-smtp-proxy](https://github.com/0wQ/next-smtp-proxy)
     - [x] [Gotify](https://gotify.net)
     - [x] [Inotify](https://github.com/xpnas/Inotify) / [合宙官方的推送服务](https://push.luatos.org)
+    - [x] 邮件 (SMTP协议)
 - [x] 通过短信控制设备
     - [x] 发短信, 格式: `SMS,10010,余额查询`
 - [x] 定时基站定位

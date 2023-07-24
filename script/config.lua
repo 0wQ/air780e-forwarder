@@ -50,6 +50,16 @@ return {
     NEXT_SMTP_PROXY_TO_EMAIL = "",
     NEXT_SMTP_PROXY_SUBJECT = "来自 Air780E 的通知",
     --
+    -- smtp 通知配置
+    SMTP_HOST = "smtp.qq.com",
+    SMTP_PORT = 25,
+    SMTP_USERNAME = "",
+    SMTP_PASSWORD = "",
+    SMTP_MAIL_FROM = "",
+    SMTP_MAIL_TO = "",
+    SMTP_MAIL_SUBJECT = "来自 Air780E 的通知",
+    SMTP_TLS_ENABLE = false,
+    --
     -- gotify 通知配置, https://gotify.net/
     GOTIFY_API = "",
     GOTIFY_TITLE = "Air780E",
