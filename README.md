@@ -27,11 +27,13 @@
 
 ## :hammer: Usage
 
+> 可以参考 [lageev](https://github.com/lageev/air780e-forwarder) 写的教程 https://kdocs.cn/l/coe1ozIlSX70
+
 ### 1. 按注释修改 `script/config.lua` 配置文件
 
 ### 2. 烧录脚本
 
-> 推荐使用 `core` 目录下的固件
+> 固件下载 https://gitee.com/openLuat/LuatOS/releases 选择带有 EC618 或 Air780 关键字的固件
 >
 > `core` 目录下文件名中带有 `RNDIS` 的, 支持 RNDIS 网卡功能, 如果 SIM 卡流量不多请勿选择
 
