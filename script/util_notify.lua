@@ -135,14 +135,20 @@ local notify = {
             return
         end
 
+        local url = config.DINGTALK_WEBHOOK
+        -- 如果配置了 config.DINGTALK_SECRET 则需要签名(加签), 没配置则为自定义关键词
+        if (config.DINGTALK_SECRET ~= nil and config.DINGTALK_SECRET ~= "") then
+            local timestamp = tostring(os.time()) .. "000"
+            local sign = crypto.hmac_sha256(timestamp .. "\n" .. config.DINGTALK_SECRET, config.DINGTALK_SECRET):fromHex():toBase64():urlEncode()
+            url = url .. "&timestamp=" .. timestamp .. "&sign=" .. sign
+        end
+
         local header = { ["Content-Type"] = "application/json; charset=utf-8" }
         local body = { msgtype = "text", text = { content = msg } }
-        local json_data = json.encode(body)
-        -- LuatOS Bug, json.encode 会将 \n 转换为 \b
-        json_data = string.gsub(json_data, "\\b", "\\n")
+        body = json.encode(body)
 
-        log.info("util_notify", "POST", config.DINGTALK_WEBHOOK)
-        return util_http.fetch(nil, "POST", config.DINGTALK_WEBHOOK, header, json_data)
+        log.info("util_notify", "POST", url)
+        return util_http.fetch(nil, "POST", url, header, body)
     end,
     -- 发送到 feishu
     ["feishu"] = function(msg)

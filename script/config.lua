@@ -5,7 +5,7 @@ return {
     --
     -- 通知类型, 支持配置多个
     -- NOTIFY_TYPE = {"custom_post", "telegram", "pushdeer", "bark", "dingtalk", "feishu", "wecom", "pushover", "inotify", "next-smtp-proxy", "gotify", "serial"},
-    NOTIFY_TYPE = "serial",
+    NOTIFY_TYPE = "custom_post",
     --
     -- custom_post 通知配置, 自定义 POST 请求, CUSTOM_POST_BODY_TABLE 中的 {msg} 会被替换为通知内容
     CUSTOM_POST_URL = "https://sctapi.ftqq.com/<SENDKEY>.send",
@@ -25,7 +25,9 @@ return {
     BARK_KEY = "",
     --
     -- dingtalk 通知配置, https://open.dingtalk.com/document/robots/custom-robot-access
+    -- 如果是加签方式, 请填写 DINGTALK_SECRET, 否则留空为自定义关键词方式, https://open.dingtalk.com/document/robots/customize-robot-security-settings
     DINGTALK_WEBHOOK = "",
+    DINGTALK_SECRET = "",
     --
     -- feishu 通知配置, https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN
     FEISHU_WEBHOOK = "",
@@ -70,7 +72,7 @@ return {
     QUERY_TRAFFIC_INTERVAL = 0,
     --
     -- 定时基站定位间隔, 单位毫秒, 设置为 0 关闭 (定位成功后会追加到通知内容后面, 基站定位本身会消耗流量, 通知内容增加也会导致流量消耗增加)
-    LOCATION_INTERVAL = 0,
+    LOCATION_INTERVAL = 30 * 1000,
     --
     -- 开机通知 (会消耗流量)
     BOOT_NOTIFY = true,
