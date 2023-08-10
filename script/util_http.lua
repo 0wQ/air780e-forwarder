@@ -12,8 +12,10 @@ local http_running_count = 0
 -- @param headers 请求头
 -- @param body 请求体
 function util_http.fetch(timeout, method, url, headers, body)
+    collectgarbage("collect")
+
     timeout = timeout or 1000 * 25
-    local opts = {timeout = timeout}
+    local opts = { timeout = timeout }
 
     http_count = http_count + 1
     http_running_count = http_running_count + 1
@@ -27,14 +29,12 @@ function util_http.fetch(timeout, method, url, headers, body)
     res_code, res_headers, res_body = http.request(method, url, headers, body, opts).wait()
     log.debug("util_http.fetch", "请求结束", "id:", id, "code:", res_code)
 
-    if res_code == -8 then
-        log.warn("util_http.fetch", "请求超时", "id:", id)
-    end
+    if res_code == -8 then log.warn("util_http.fetch", "请求超时", "id:", id) end
 
     http_running_count = http_running_count - 1
-    if http_running_count == 0 then
-        util_netled.blink()
-    end
+    if http_running_count == 0 then util_netled.blink() end
+
+    collectgarbage("collect")
 
     return res_code, res_headers, res_body
 end

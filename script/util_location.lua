@@ -3,12 +3,7 @@ local util_location = {}
 PRODUCT_KEY = "v32xEAKsGTIEQxtqgwCldp5aPlcnPs3K"
 local lbsLoc = require("lbsLoc")
 
-local cache = {
-    lbs_data = {
-        lat = 0,
-        lng = 0
-    }
-}
+local cache = { lbs_data = { lat = 0, lng = 0 } }
 
 --- 格式化经纬度 (保留小数点后 6 位, 去除末尾的 0)
 -- @param value 经纬度
@@ -26,9 +21,7 @@ end
 local function getMapLink(lat, lng)
     lat, lng = lat or 0, lng or 0
     local map_link = ""
-    if lat ~= 0 and lng ~= 0 then
-        map_link = "http://apis.map.qq.com/uri/v1/marker?coord_type=1&marker=title:+;coord:" .. lat .. "," .. lng
-    end
+    if lat ~= 0 and lng ~= 0 then map_link = "http://apis.map.qq.com/uri/v1/marker?coord_type=1&marker=title:+;coord:" .. lat .. "," .. lng end
     log.debug("util_location.getMapLink", map_link)
     return map_link
 end
@@ -37,9 +30,7 @@ end
 local function getLocCb(result, lat, lng, addr, time, locType)
     log.info("util_location.getLocCb", "result,lat,lng,time,locType:", result, lat, lng, time:toHex(), locType)
     -- 获取经纬度成功, 坐标系WGS84
-    if result == 0 then
-        cache.lbs_data = {lat, lng}
-    end
+    if result == 0 then cache.lbs_data = { lat, lng } end
 end
 
 --- 刷新基站信息
@@ -59,17 +50,13 @@ end
 
 --- 刷新基站定位信息
 -- @param timeout 超时时间(单位: 毫秒)
-function util_location.refresh(timeout, is_refresh_cell_info_disabled)
+function util_location.refresh(timeout)
     timeout = type(timeout) == "number" and timeout or nil
 
-    sys.taskInit(
-        function()
-            if not is_refresh_cell_info_disabled then
-                refreshCellInfo()
-            end
-            lbsLoc.request(getLocCb, nil, timeout, nil, "bs.air32.cn")
-        end
-    )
+    sys.taskInit(function()
+        refreshCellInfo()
+        lbsLoc.request(getLocCb, nil, timeout, nil, "bs.air32.cn")
+    end)
 end
 
 --- 获取位置信息
@@ -82,11 +69,8 @@ function util_location.get()
     return lat, lng, getMapLink(lat, lng)
 end
 
-sys.subscribe(
-    "CELL_INFO_UPDATE",
-    function()
-        log.debug("EVENT.CELL_INFO_UPDATE")
-    end
-)
+sys.taskInit(refreshCellInfo)
+
+sys.subscribe("CELL_INFO_UPDATE", function() log.debug("EVENT.CELL_INFO_UPDATE") end)
 
 return util_location
