@@ -52,7 +52,7 @@ return {
     NEXT_SMTP_PROXY_TO_EMAIL = "",
     NEXT_SMTP_PROXY_SUBJECT = "来自 Air780E 的通知",
     --
-    -- smtp 通知配置
+    -- smtp 通知配置(可能不支持加密协议)
     SMTP_HOST = "smtp.qq.com",
     SMTP_PORT = 25,
     SMTP_USERNAME = "",
@@ -72,7 +72,7 @@ return {
     QUERY_TRAFFIC_INTERVAL = 0,
     --
     -- 定时基站定位间隔, 单位毫秒, 设置为 0 关闭 (定位成功后会追加到通知内容后面, 基站定位本身会消耗流量, 通知内容增加也会导致流量消耗增加)
-    LOCATION_INTERVAL = 30 * 1000,
+    LOCATION_INTERVAL = 0,
     --
     -- 开机通知 (会消耗流量)
     BOOT_NOTIFY = true,
