@@ -318,20 +318,20 @@ local function append()
     if band >= 0 then msg = msg .. "\n频段: B" .. band end
 
     -- 流量统计
-    local uplinkGB, uplinkB, downlinkGB, downlinkB = mobile.dataTraffic()
-    uplinkB = uplinkGB * 1024 * 1024 * 1024 + uplinkB
-    downlinkB = downlinkGB * 1024 * 1024 * 1024 + downlinkB
-    local function formatBytes(bytes)
-        if bytes < 1024 then
-            return bytes .. "B"
-        elseif bytes < 1024 * 1024 then
-            return string.format("%.2fKB", bytes / 1024)
-        elseif bytes < 1024 * 1024 * 1024 then
-            return string.format("%.2fMB", bytes / 1024 / 1024)
-        else
-            return string.format("%.2fGB", bytes / 1024 / 1024 / 1024)
-        end
-    end
+    -- local uplinkGB, uplinkB, downlinkGB, downlinkB = mobile.dataTraffic()
+    -- uplinkB = uplinkGB * 1024 * 1024 * 1024 + uplinkB
+    -- downlinkB = downlinkGB * 1024 * 1024 * 1024 + downlinkB
+    -- local function formatBytes(bytes)
+    --     if bytes < 1024 then
+    --         return bytes .. "B"
+    --     elseif bytes < 1024 * 1024 then
+    --         return string.format("%.2fKB", bytes / 1024)
+    --     elseif bytes < 1024 * 1024 * 1024 then
+    --         return string.format("%.2fMB", bytes / 1024 / 1024)
+    --     else
+    --         return string.format("%.2fGB", bytes / 1024 / 1024 / 1024)
+    --     end
+    -- end
     -- msg = msg .. "\n流量: ↑" .. formatBytes(uplinkB) .. " ↓" .. formatBytes(downlinkB)
 
     -- 位置
