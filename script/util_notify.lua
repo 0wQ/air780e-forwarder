@@ -292,7 +292,7 @@ local function append()
     local msg = "\n"
 
     -- 本机号码
-    local number = mobile.number(mobile.simid())
+    local number = mobile.number(mobile.simid()) or config.FALLBACK_LOCAL_NUMBER
     if number then msg = msg .. "\n本机号码: " .. number end
 
     -- 开机时长
