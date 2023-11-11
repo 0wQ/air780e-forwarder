@@ -8,9 +8,6 @@ log.info("main", "开机原因", pm.lastReson())
 sys = require "sys"
 sysplus = require "sysplus"
 
--- 串口配置
-uart.setup(1, 115200, 8, 1, uart.NONE)
-
 -- 添加硬狗防止程序卡死
 wdt.init(9000)
 sys.timerLoopStart(wdt.feed, 3000)
@@ -60,18 +57,22 @@ util_mobile = require "util_mobile"
 util_location = require "util_location"
 util_notify = require "util_notify"
 
--- 串口接收回调
-uart.on(1, "receive", function(id, len)
-    local data = uart.read(id, len)
-    log.info("uart read:", id, len, data)
-    if config.ROLE == "MASTER" then
-        -- 主机, 通过队列发送数据
-        util_notify.add(data)
-    else
-        -- 从机, 通过串口发送数据
-        uart.write(1, data)
-    end
-end)
+if config.NOTIFY_TYPE == "serial" then
+    -- 串口配置
+    uart.setup(1, 115200, 8, 1, uart.NONE)
+    -- 串口接收回调
+    uart.on(1, "receive", function(id, len)
+        local data = uart.read(id, len)
+        log.info("uart read:", id, len, data)
+        if config.ROLE == "MASTER" then
+            -- 主机, 通过队列发送数据
+            util_notify.add(data)
+        else
+            -- 从机, 通过串口发送数据
+            uart.write(1, data)
+        end
+    end)
+end
 
 -- 短信接收回调
 sms.setNewSmsCb(function(sender_number, sms_content, m)

@@ -1,11 +1,11 @@
 return {
-    -- 角色类型 MASTER: 主机,可主动联网; SLAVE: 从机,不可主动联网,通过串口发送数据
-    -- ROLE = {"MASTER","SLAVE"}
-    ROLE = "MASTER",
-    --
     -- 通知类型, 支持配置多个
     -- NOTIFY_TYPE = {"custom_post", "telegram", "pushdeer", "bark", "dingtalk", "feishu", "wecom", "pushover", "inotify", "next-smtp-proxy", "gotify", "serial"},
     NOTIFY_TYPE = "custom_post",
+    --
+    -- 角色类型, 用于区分主从机, 仅当使用串口转发 NOTIFY_TYPE = "serial" 时才需要配置
+    -- MASTER: 主机, 可主动联网; SLAVE: 从机, 不可主动联网, 通过串口发送数据
+    ROLE = "MASTER",
     --
     -- custom_post 通知配置, 自定义 POST 请求, CUSTOM_POST_BODY_TABLE 中的 {msg} 会被替换为通知内容
     CUSTOM_POST_URL = "https://sctapi.ftqq.com/<SENDKEY>.send",
