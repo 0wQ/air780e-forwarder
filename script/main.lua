@@ -105,7 +105,7 @@ end)
 
 sys.taskInit(function()
     -- 等待网络环境准备就绪
-    sys.waitUntil("IP_READY")
+    sys.waitUntil("IP_READY", 20000)
 
     util_netled.init()
 
