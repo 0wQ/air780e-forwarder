@@ -12,6 +12,9 @@ sysplus = require "sysplus"
 wdt.init(9000)
 sys.timerLoopStart(wdt.feed, 3000)
 
+-- 设置电平输出 3.3V
+-- pm.ioVol(pm.IOVOL_ALL_GPIO, 3300)
+
 -- 设置 DNS
 socket.setDNS(nil, 1, "119.29.29.29")
 socket.setDNS(nil, 2, "223.5.5.5")
