@@ -96,14 +96,8 @@ sms.setNewSmsCb(function(sender_number, sms_content, m)
         is_sms_ctrl = true
     end
 
-    -- 本机收到的信息直接发送出去 or 串口发送
     -- 发送通知
-    if config.ROLE == "MASTER" then
-        util_notify.add({ sms_content, "", "发件号码: " .. sender_number, "发件时间: " .. time, "#SMS" .. (is_sms_ctrl and " #CTRL" or "") })
-    else
-        -- 从机, 通过串口发送数据
-        uart.write(1, sms_content .. "发件号码" .. sender_number)
-    end
+    util_notify.add({ sms_content, "", "发件号码: " .. sender_number, "发件时间: " .. time, "#SMS" .. (is_sms_ctrl and " #CTRL" or "") })
 end)
 
 sys.taskInit(function()
