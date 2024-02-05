@@ -57,8 +57,15 @@ util_mobile = require "util_mobile"
 util_location = require "util_location"
 util_notify = require "util_notify"
 
--- 由于NOTIFY_TYPE支持多个配置，需按照包含来判断
-if string.find(config.NOTIFY_TYPE, "serial") then
+-- 由于 NOTIFY_TYPE 支持多个配置, 需按照包含来判断
+local containsValue = function(t, value)
+    if t == value then return true end
+    if type(t) ~= "table" then return false end
+    for k, v in pairs(t) do if v == value then return true end end
+    return false
+end
+
+if containsValue(config.NOTIFY_TYPE, "serial") then
     -- 串口配置
     uart.setup(1, 115200, 8, 1, uart.NONE)
     -- 串口接收回调
