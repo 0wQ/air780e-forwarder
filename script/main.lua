@@ -57,7 +57,8 @@ util_mobile = require "util_mobile"
 util_location = require "util_location"
 util_notify = require "util_notify"
 
-if config.NOTIFY_TYPE == "serial" then
+-- 由于NOTIFY_TYPE支持多个配置，需按照包含来判断
+if string.find(config.NOTIFY_TYPE, "serial") then
     -- 串口配置
     uart.setup(1, 115200, 8, 1, uart.NONE)
     -- 串口接收回调
@@ -88,8 +89,14 @@ sms.setNewSmsCb(function(sender_number, sms_content, m)
         is_sms_ctrl = true
     end
 
+    -- 本机收到的信息直接发送出去 or 串口发送
     -- 发送通知
-    util_notify.add({ sms_content, "", "发件号码: " .. sender_number, "发件时间: " .. time, "#SMS" .. (is_sms_ctrl and " #CTRL" or "") })
+    if config.ROLE == "MASTER" then
+        util_notify.add({ sms_content, "", "发件号码: " .. sender_number, "发件时间: " .. time, "#SMS" .. (is_sms_ctrl and " #CTRL" or "") })
+    else
+        -- 从机, 通过串口发送数据
+        uart.write(1, sms_content .. "发件号码" .. sender_number)
+    end
 end)
 
 sys.taskInit(function()
