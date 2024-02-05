@@ -68,7 +68,7 @@ local notify = {
         local header = { ["content-type"] = "application/json" }
         local body = { ["chat_id"] = config.TELEGRAM_CHAT_ID, ["disable_web_page_preview"] = true, ["text"] = msg }
         local json_data = json.encode(body)
-        json_data = string.gsub(json_data, "\\b", "\\n")
+        -- json_data = string.gsub(json_data, "\\b", "\\n")
 
         log.info("util_notify", "POST", config.TELEGRAM_API)
         return util_http.fetch(nil, "POST", config.TELEGRAM_API, header, json_data)
@@ -88,7 +88,7 @@ local notify = {
         local header = { ["Content-Type"] = "application/json; charset=utf-8" }
         local body = { title = config.GOTIFY_TITLE, message = msg, priority = config.GOTIFY_PRIORITY }
         local json_data = json.encode(body)
-        json_data = string.gsub(json_data, "\\b", "\\n")
+        -- json_data = string.gsub(json_data, "\\b", "\\n")
 
         log.info("util_notify", "POST", config.GOTIFY_API)
         return util_http.fetch(nil, "POST", url, header, json_data)
@@ -161,7 +161,7 @@ local notify = {
         local body = { msg_type = "text", content = { text = msg } }
         local json_data = json.encode(body)
         -- LuatOS Bug, json.encode 会将 \n 转换为 \b
-        json_data = string.gsub(json_data, "\\b", "\\n")
+        -- json_data = string.gsub(json_data, "\\b", "\\n")
 
         log.info("util_notify", "POST", config.FEISHU_WEBHOOK)
         return util_http.fetch(nil, "POST", config.FEISHU_WEBHOOK, header, json_data)
@@ -177,7 +177,7 @@ local notify = {
         local body = { msgtype = "text", text = { content = msg } }
         local json_data = json.encode(body)
         -- LuatOS Bug, json.encode 会将 \n 转换为 \b
-        json_data = string.gsub(json_data, "\\b", "\\n")
+        -- json_data = string.gsub(json_data, "\\b", "\\n")
 
         log.info("util_notify", "POST", config.WECOM_WEBHOOK)
         return util_http.fetch(nil, "POST", config.WECOM_WEBHOOK, header, json_data)
@@ -198,7 +198,7 @@ local notify = {
 
         local json_data = json.encode(body)
         -- LuatOS Bug, json.encode 会将 \n 转换为 \b
-        json_data = string.gsub(json_data, "\\b", "\\n")
+        -- json_data = string.gsub(json_data, "\\b", "\\n")
 
         local url = "https://api.pushover.net/1/messages.json"
 
