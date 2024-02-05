@@ -416,16 +416,24 @@ end
 -- 发送成功则从消息队列中删除
 -- 发送失败则等待下次轮询
 local function poll()
-    local item, result, roaming
+    local item, result
+    local codes = {
+        [0] = "网络未注册",
+        [1] = "网络已注册",
+        [2] = "网络搜索中",
+        [3] = "网络注册被拒绝",
+        [4] = "网络状态未知",
+        [5] = "网络已注册，漫游",
+        [6] = "网络已注册,仅SMS",
+        [7] = "网络已注册,漫游,仅SMS",
+        [8] = "网络已注册,紧急服务",
+        [9] = "网络已注册,非主要服务",
+        [10] = "网络已注册,非主要服务,漫游",
+    }
     while true do
         -- 消息队列非空, 且网络已注册
+        log.debug("mobile.status:", codes[mobile.status() or 0] or "未知网络状态")
         if next(msg_queue) ~= nil and (mobile.status() == 1 or mobile.status() == 5) then
-            -- 判断是否漫游
-            if mobile.status() == 5 then
-                roaming = true
-            else
-                roaming = false
-            end
             log.debug("util_notify.poll", "轮询消息队列中, 当前队列长度:", #msg_queue)
 
             item = msg_queue[1]
@@ -434,12 +442,7 @@ local function poll()
             if item.retry > (config.NOTIFY_RETRY_MAX or 100) then
                 log.error("util_notify.poll", "超过最大重发次数", "msg:", item.msg)
             else
-                if roaming then
-                    log.debug("util_notify.poll", "当前设备处于漫游状态只使用 Serial 通信方式")
-                    result = util_notify.send(item.msg, 'serial')
-                else
-                    result = util_notify.send(item.msg, item.channel)
-                end
+                result = util_notify.send(item.msg, item.channel)
                 item.retry = item.retry + 1
 
                 if not result then
