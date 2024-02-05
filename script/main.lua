@@ -143,4 +143,35 @@ sys.taskInit(function()
     end
 end)
 
+-- 通话相关
+local is_calling = false
+
+sys.subscribe("CC_IND", function(status)
+    if cc == nil then return end
+
+    if status == "INCOMINGCALL" then
+        -- 来电事件, 期间会重复触发
+        if is_calling then return end
+        is_calling = true
+
+        log.info("cc_status", "INCOMINGCALL", "来电事件", cc.lastNum())
+
+        -- 发送通知
+        util_notify.add({ "来电号码: " .. cc.lastNum(), "来电时间: " .. os.date("%Y-%m-%d %H:%M:%S"), "#CALL #CALL_IN" })
+        return
+    end
+
+    if status == "DISCONNECTED" then
+        -- 挂断事件
+        is_calling = false
+        log.info("cc_status", "DISCONNECTED", "挂断事件", cc.lastNum())
+
+        -- 发送通知
+        util_notify.add({ "来电号码: " .. cc.lastNum(), "挂断时间: " .. os.date("%Y-%m-%d %H:%M:%S"), "#CALL #CALL_DISCONNECTED" })
+        return
+    end
+
+    log.info("cc_status", status)
+end)
+
 sys.run()
