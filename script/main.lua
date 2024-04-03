@@ -19,8 +19,8 @@ sys.timerLoopStart(wdt.feed, 3000)
 socket.setDNS(nil, 1, "119.29.29.29")
 socket.setDNS(nil, 2, "223.5.5.5")
 
--- 设置 SIM 自动恢复(单位: 毫秒), 搜索小区信息间隔(单位: 毫秒), 最大搜索时间(单位: 秒)
-mobile.setAuto(1000 * 10)
+-- SIM 自动恢复, 周期性获取小区信息, 网络遇到严重故障时尝试自动恢复等功能
+mobile.setAuto(1000 * 10, nil, nil, true, 1000 * 60)
 
 -- 开启 IPv6
 -- mobile.ipv6(true)
