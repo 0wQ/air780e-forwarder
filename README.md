@@ -1,4 +1,4 @@
-# Air700E / Air780E / Air780EG 短信转发
+# Air700E / Air780E / Air780EP / Air780EPV 短信转发 来电通知
 
 ## :sparkles: Feature
 
