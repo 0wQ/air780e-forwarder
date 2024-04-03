@@ -23,7 +23,7 @@ socket.setDNS(nil, 2, "223.5.5.5")
 mobile.setAuto(1000 * 10)
 
 -- 开启 IPv6
-mobile.ipv6(true)
+-- mobile.ipv6(true)
 
 -- POWERKEY
 local button_last_press_time, button_last_release_time = 0, 0
