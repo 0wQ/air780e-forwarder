@@ -464,6 +464,12 @@ local function poll()
                     sys.wait(5000)
                 end
             end
+
+            if item.retry % 10 == 0 then
+                mobile.reset()
+                log.warn("util_notify.poll", "重发次数太多, 重启 LTE 协议栈")
+            end
+
             sys.wait(50)
         else
             sys.waitUntil("NEW_MSG", 1000 * 10)
