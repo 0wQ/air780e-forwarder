@@ -317,6 +317,18 @@ local function append()
     local band = util_mobile.getBand()
     if band >= 0 then msg = msg .. "\n频段: B" .. band end
 
+    -- 电压, 读取 VBAT 供电电压, 单位为 mV
+    adc.open(adc.CH_VBAT)
+    local vbat = adc.get(adc.CH_VBAT)
+    adc.close(adc.CH_VBAT)
+    if vbat >= 0 then msg = msg .. "\n电压: " .. string.format("%.1f", vbat / 1000) .. "V" end
+
+    -- 温度
+    adc.open(adc.CH_CPU)
+    local temp = adc.get(adc.CH_CPU)
+    adc.close(adc.CH_CPU)
+    if temp >= 0 then msg = msg .. "\n温度: " .. string.format("%.1f", temp / 1000) .. "°C" end
+
     -- 流量统计
     -- local uplinkGB, uplinkB, downlinkGB, downlinkB = mobile.dataTraffic()
     -- uplinkB = uplinkGB * 1024 * 1024 * 1024 + uplinkB
