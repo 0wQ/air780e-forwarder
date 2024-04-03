@@ -443,8 +443,9 @@ local function poll()
         [10] = "网络已注册,非主要服务,漫游",
     }
     while true do
+        -- 打印网络状态
+        if mobile.status() ~= 1 then log.debug("mobile.status:", codes[mobile.status() or 0] or "未知网络状态") end
         -- 消息队列非空, 且网络已注册
-        log.debug("mobile.status:", codes[mobile.status() or 0] or "未知网络状态")
         if next(msg_queue) ~= nil and (mobile.status() == 1 or mobile.status() == 5) then
             log.debug("util_notify.poll", "轮询消息队列中, 当前队列长度:", #msg_queue)
 
