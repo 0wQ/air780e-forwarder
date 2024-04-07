@@ -146,6 +146,9 @@ sys.taskInit(function()
         pm.power(pm.GPS_ANT, false)
         pm.power(pm.DAC_EN, false)
         pm.force(pm.LIGHT) -- 进入休眠
+    else
+        pm.force(pm.NONE)
+        sys.timerLoopStart(pm.force, 1000 * 60 * 20, pm.NONE)
     end
 end)
 
