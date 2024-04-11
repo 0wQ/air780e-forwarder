@@ -129,6 +129,11 @@ sys.taskInit(function()
         sys.timerLoopStart(util_location.refresh, config.LOCATION_INTERVAL)
     end
 
+    -- 定时上报
+    if config.REPORT_INTERVAL and config.REPORT_INTERVAL >= 1000 * 30 then
+        sys.timerLoopStart(function() util_notify.add("#ALIVE_REPORT") end, config.REPORT_INTERVAL)
+    end
+
     -- 电源键短按发送测试通知
     sys.subscribe("POWERKEY_SHORT_PRESS", function() util_notify.add("#ALIVE") end)
     -- 电源键长按查询流量
