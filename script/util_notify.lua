@@ -444,30 +444,44 @@ local function poll()
     }
     while true do
         -- 打印网络状态
-        if mobile.status() ~= 1 then log.debug("mobile.status:", codes[mobile.status() or 0] or "未知网络状态") end
+        if mobile.status() ~= 1 then
+            log.debug("mobile.status:", codes[mobile.status() or 0] or "未知网络状态")
+        end
         -- 消息队列非空, 且网络已注册
         if next(msg_queue) ~= nil and (mobile.status() == 1 or mobile.status() == 5) then
-            log.debug("util_notify.poll", "轮询消息队列中, 当前队列长度:", #msg_queue)
+            log.debug("util_notify.poll", "轮询消息队列中", "队列长度:", #msg_queue, "重发次数:", msg_queue[1].retry)
 
             item = msg_queue[1]
             table.remove(msg_queue, 1)
 
+            local msg = item.msg
+            -- 通知内容添加重发次数
+            if item.retry > 0 then
+                msg = msg .. "\n重发次数: " .. item.retry
+            end
+
             if item.retry > (config.NOTIFY_RETRY_MAX or 100) then
                 log.error("util_notify.poll", "超过最大重发次数", "msg:", item.msg)
             else
-                result = util_notify.send(item.msg, item.channel)
+                result = util_notify.send(msg, item.channel)
                 item.retry = item.retry + 1
 
                 if not result then
                     -- 发送失败, 移到队尾
                     table.insert(msg_queue, item)
-                    sys.wait(5000)
+
+                    -- 等待重发时间, 每次增加 2 秒
+                    local delay = 5000 + 2000 * (item.retry - 1)
+                    log.debug("util_notify.poll", "等待下次重发", delay .. "ms")
+                    sys.wait(delay)
                 end
             end
 
-            if item.retry % 10 == 0 then
-                mobile.reset()
-                log.warn("util_notify.poll", "重发次数太多, 重启 LTE 协议栈")
+            if item.retry % 5 == 0 then
+                log.warn("util_notify.poll", "重发次数过多, 开关飞行模式")
+                mobile.flymode(0, true)
+                sys.wait(1000)
+                mobile.flymode(0, false)
             end
 
             sys.wait(50)
