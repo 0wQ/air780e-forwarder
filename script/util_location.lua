@@ -28,9 +28,11 @@ end
 
 --- lbsLoc.request 回调
 local function getLocCb(result, lat, lng, addr, time, locType)
-    log.info("util_location.getLocCb", "result,lat,lng,time,locType:", result, lat, lng, time:toHex(), locType)
+    log.info("util_location.getLocCb", "result,lat,lng,time,locType:", result, lat, lng, time and time:toHex(), locType)
     -- 获取经纬度成功, 坐标系WGS84
-    if result == 0 then cache.lbs_data = { lat, lng } end
+    if result == 0 and lat and lng then
+        cache.lbs_data = { lat, lng }
+    end
 end
 
 --- 刷新基站信息
@@ -55,7 +57,7 @@ function util_location.refresh(timeout)
 
     sys.taskInit(function()
         refreshCellInfo()
-        lbsLoc.request(getLocCb, nil, timeout, nil, "bs.air32.cn")
+        lbsLoc.request(getLocCb, nil, timeout)
     end)
 end
 
