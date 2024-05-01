@@ -137,7 +137,12 @@ local notify = {
 
         local url = config.DINGTALK_WEBHOOK
         -- 如果配置了 config.DINGTALK_SECRET 则需要签名(加签), 没配置则为自定义关键词
-        if (config.DINGTALK_SECRET ~= nil and config.DINGTALK_SECRET ~= "") then
+        if (config.DINGTALK_SECRET and config.DINGTALK_SECRET ~= "") then
+            -- 时间异常则等待同步
+            if os.time() < 1714500000 then
+                socket.sntp()
+                sys.waitUntil("NTP_UPDATE", 1000 * 10)
+            end
             local timestamp = tostring(os.time()) .. "000"
             local sign = crypto.hmac_sha256(timestamp .. "\n" .. config.DINGTALK_SECRET, config.DINGTALK_SECRET):fromHex():toBase64():urlEncode()
             url = url .. "&timestamp=" .. timestamp .. "&sign=" .. sign
@@ -148,7 +153,25 @@ local notify = {
         body = json.encode(body)
 
         log.info("util_notify", "POST", url)
-        return util_http.fetch(nil, "POST", url, header, body)
+        local res_code, res_headers, res_body = util_http.fetch(nil, "POST", url, header, body)
+
+        -- 处理响应
+        -- https://open.dingtalk.com/document/orgapp/custom-robots-send-group-messages
+        if res_code == 200 and res_body and res_body ~= "" then
+            local res_data = json.decode(res_body)
+            local res_errcode = res_data.errcode or 0
+            local res_errmsg = res_data.errmsg or ""
+            -- 系统繁忙 / 发送速度太快而限流
+            if res_errcode == -1 or res_errcode == 410100 then
+                return 500, res_headers, res_body
+            end
+            -- timestamp 无效
+            if res_errcode == 310000 and (string.find(res_errmsg, "timestamp") or string.find(res_errmsg, "过期")) then
+                socket.sntp()
+                return 500, res_headers, res_body
+            end
+        end
+        return res_code, res_headers, res_body
     end,
     -- 发送到 feishu
     ["feishu"] = function(msg)
@@ -384,12 +407,12 @@ function util_notify.send(msg, channel)
         log.info("util_notify.send", "发送通知失败, 无需重发", "code:", code, "body:", body)
         return true
     end
-    if code == -6 then
-        -- 发生在 url 过长时, 重发也不会成功
-        log.info("util_notify.send", "发送通知失败, 无需重发", "code:", code, "body:", body)
-        return true
-    end
-    if code >= 200 and code < 500 then
+    -- if code == -6 then
+    --     -- 发生在 url 过长时, 重发也不会成功
+    --     log.info("util_notify.send", "发送通知失败, 无需重发", "code:", code, "body:", body)
+    --     return true
+    -- end
+    if code >= 200 and code < 500 and code ~= 429 then
         -- http 2xx 成功
         -- http 3xx 重定向, 重发也不会成功
         -- http 4xx 客户端错误, 重发也不会成功

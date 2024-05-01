@@ -119,6 +119,9 @@ sys.taskInit(function()
     if config.BOOT_NOTIFY then sys.timerStart(util_notify.add, 1000 * 5, "#BOOT") end
 
     -- 定时同步时间
+    if os.time() < 1714500000 then
+        socket.sntp()
+    end
     sys.timerLoopStart(socket.sntp, 1000 * 60 * 30)
 
     -- 定时查询流量
