@@ -86,9 +86,6 @@ return {
     -- 通知最大重发次数
     NOTIFY_RETRY_MAX = 20,
     --
-    -- 开启低功耗模式, USB 断开连接无法查看日志, RNDIS 网卡会断开
-    LOW_POWER_MODE = false,
-    --
     -- 本机号码, 优先使用 mobile.number() 接口获取, 如果获取不到则使用此号码
     FALLBACK_LOCAL_NUMBER = "+8618888888888",
 }

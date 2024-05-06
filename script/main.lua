@@ -147,23 +147,6 @@ sys.taskInit(function()
     sys.subscribe("POWERKEY_SHORT_PRESS", function() util_notify.add("#ALIVE") end)
     -- 电源键长按查询流量
     sys.subscribe("POWERKEY_LONG_PRESS", util_mobile.queryTraffic)
-
-    -- 开启低功耗模式
-    if config.LOW_POWER_MODE then
-        sys.wait(1000 * 15)
-        log.warn("main", "即将关闭 usb 电源, 如需查看日志请在配置中关闭低功耗模式")
-        sys.wait(1000 * 5)
-        gpio.setup(23, nil)
-        gpio.close(33)
-        pm.power(pm.USB, false) -- 关闭 USB
-        pm.power(pm.GPS, false)
-        pm.power(pm.GPS_ANT, false)
-        pm.power(pm.DAC_EN, false)
-        pm.force(pm.LIGHT) -- 进入休眠
-    else
-        pm.force(pm.NONE)
-        sys.timerLoopStart(pm.force, 1000 * 60 * 20, pm.NONE)
-    end
 end)
 
 -- 通话相关
