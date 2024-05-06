@@ -1,6 +1,6 @@
 return {
     -- 通知类型, 支持配置多个
-    -- NOTIFY_TYPE = {"custom_post", "telegram", "pushdeer", "bark", "dingtalk", "feishu", "wecom", "pushover", "inotify", "next-smtp-proxy", "gotify", "serial"},
+    -- NOTIFY_TYPE = { "custom_post", "telegram", "pushdeer", "bark", "dingtalk", "feishu", "wecom", "pushover", "inotify", "next-smtp-proxy", "gotify", "serial" },
     NOTIFY_TYPE = "custom_post",
     --
     -- 角色类型, 用于区分主从机, 仅当使用串口转发 NOTIFY_TYPE = "serial" 时才需要配置
@@ -10,7 +10,7 @@ return {
     -- custom_post 通知配置, 自定义 POST 请求, CUSTOM_POST_BODY_TABLE 中的 {msg} 会被替换为通知内容
     CUSTOM_POST_URL = "https://sctapi.ftqq.com/<SENDKEY>.send",
     CUSTOM_POST_CONTENT_TYPE = "application/json",
-    CUSTOM_POST_BODY_TABLE = {["title"] = "这里是标题", ["desp"] = "这里是内容, 会被替换掉:\n{msg}\n{msg}"},
+    CUSTOM_POST_BODY_TABLE = { ["title"] = "这里是标题", ["desp"] = "这里是内容, 会被替换掉:\n{msg}\n{msg}" },
     --
     -- telegram 通知配置, https://github.com/0wQ/telegram-notify 或者自行反代
     TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage",
@@ -73,6 +73,9 @@ return {
     --
     -- 定时基站定位间隔, 单位毫秒, 设置为 0 关闭 (定位成功后会追加到通知内容后面, 基站定位本身会消耗流量, 通知内容增加也会导致流量消耗增加)
     LOCATION_INTERVAL = 0,
+    --
+    -- 定时同步时间间隔, 单位毫秒, 设置为 0 关闭
+    SNTP_INTERVAL = 1000 * 60 * 60 * 6,
     --
     -- 定时上报间隔, 单位毫秒, 设置为 0 关闭 (定时触发消息上报)
     REPORT_INTERVAL = 0,

@@ -119,27 +119,31 @@ sys.taskInit(function()
     util_netled.init()
 
     -- 开机通知
-    if config.BOOT_NOTIFY then sys.timerStart(util_notify.add, 1000 * 5, "#BOOT") end
+    if config.BOOT_NOTIFY then
+        sys.timerStart(util_notify.add, 1000 * 5, "#BOOT_" .. pm.lastReson())
+    end
 
     -- 定时同步时间
     if os.time() < 1714500000 then
         socket.sntp()
     end
-    sys.timerLoopStart(socket.sntp, 1000 * 60 * 30)
+    if type(config.SNTP_INTERVAL) == "number" and config.SNTP_INTERVAL >= 1000 * 60 then
+        sys.timerLoopStart(socket.sntp, config.SNTP_INTERVAL)
+    end
 
     -- 定时查询流量
-    if config.QUERY_TRAFFIC_INTERVAL and config.QUERY_TRAFFIC_INTERVAL >= 1000 * 60 then
+    if type(config.QUERY_TRAFFIC_INTERVAL) == "number" and config.QUERY_TRAFFIC_INTERVAL >= 1000 * 60 then
         sys.timerLoopStart(util_mobile.queryTraffic, config.QUERY_TRAFFIC_INTERVAL)
     end
 
     -- 定时基站定位
-    if config.LOCATION_INTERVAL and config.LOCATION_INTERVAL >= 1000 * 30 then
+    if type(config.LOCATION_INTERVAL) == "number" and config.LOCATION_INTERVAL >= 1000 * 60 then
         util_location.refresh(nil, true)
         sys.timerLoopStart(util_location.refresh, config.LOCATION_INTERVAL)
     end
 
     -- 定时上报
-    if config.REPORT_INTERVAL and config.REPORT_INTERVAL >= 1000 * 30 then
+    if type(config.REPORT_INTERVAL) == "number" and config.REPORT_INTERVAL >= 1000 * 60 then
         sys.timerLoopStart(function() util_notify.add("#ALIVE_REPORT") end, config.REPORT_INTERVAL)
     end
 
