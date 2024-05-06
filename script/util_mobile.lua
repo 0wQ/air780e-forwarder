@@ -65,4 +65,112 @@ function util_mobile.queryTraffic()
     end
 end
 
+--- 获取网络状态
+-- @return 网络状态
+function util_mobile.status()
+    local codes = {
+        [0] = "网络未注册",
+        [1] = "网络已注册",
+        [2] = "网络搜索中",
+        [3] = "网络注册被拒绝",
+        [4] = "网络状态未知",
+        [5] = "网络已注册,漫游",
+        [6] = "网络已注册,仅SMS",
+        [7] = "网络已注册,漫游,仅SMS",
+        [8] = "网络已注册,紧急服务",
+        [9] = "网络已注册,非主要服务",
+        [10] = "网络已注册,非主要服务,漫游",
+    }
+    local mobile_status = mobile.status()
+    if mobile_status and mobile_status >= 0 and mobile_status <= 10 then
+        return codes[mobile_status] or "未知网络状态"
+    end
+    return "未知网络状态"
+end
+
+--- 追加设备信息
+--- @return string
+function util_mobile.appendDeviceInfo()
+    local msg = "\n"
+
+    -- 本机号码
+    local number = mobile.number(mobile.simid()) or config.FALLBACK_LOCAL_NUMBER
+    if number then
+        msg = msg .. "\n本机号码: " .. number
+    end
+
+    -- 开机时长
+    local ms = mcu.ticks()
+    local seconds = math.floor(ms / 1000)
+    local minutes = math.floor(seconds / 60)
+    local hours = math.floor(minutes / 60)
+    seconds = seconds % 60
+    minutes = minutes % 60
+    local boot_time = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+    if ms >= 0 then
+        msg = msg .. "\n开机时长: " .. boot_time
+    end
+
+    -- 运营商
+    local oper = util_mobile.getOper(true)
+    if oper ~= "" then
+        msg = msg .. "\n运营商: " .. oper
+    end
+
+    -- 信号
+    msg = msg .. "\n信号: " .. mobile.rsrp() .. "dBm"
+
+    -- 频段
+    -- local band = util_mobile.getBand()
+    -- if band >= 0 then
+    --     msg = msg .. "\n频段: B" .. band
+    -- end
+
+    -- 电压, 读取 VBAT 供电电压, 单位为 mV
+    -- adc.open(adc.CH_VBAT)
+    -- local vbat = adc.get(adc.CH_VBAT)
+    -- adc.close(adc.CH_VBAT)
+    -- if vbat >= 0 then
+    --     msg = msg .. "\n电压: " .. string.format("%.1f", vbat / 1000) .. "V"
+    -- end
+
+    -- 温度
+    -- adc.open(adc.CH_CPU)
+    -- local temp = adc.get(adc.CH_CPU)
+    -- adc.close(adc.CH_CPU)
+    -- if temp >= 0 then
+    --     msg = msg .. "\n温度: " .. string.format("%.1f", temp / 1000) .. "°C"
+    -- end
+
+    -- 基站信息
+    -- msg = msg .. "\nECI: " .. mobile.eci()
+    -- msg = msg .. "\nTAC: " .. mobile.tac()
+    -- msg = msg .. "\nENBID: " .. mobile.enbid()
+
+    -- 流量统计
+    -- local uplinkGB, uplinkB, downlinkGB, downlinkB = mobile.dataTraffic()
+    -- uplinkB = uplinkGB * 1024 * 1024 * 1024 + uplinkB
+    -- downlinkB = downlinkGB * 1024 * 1024 * 1024 + downlinkB
+    -- local function formatBytes(bytes)
+    --     if bytes < 1024 then
+    --         return bytes .. "B"
+    --     elseif bytes < 1024 * 1024 then
+    --         return string.format("%.2fKB", bytes / 1024)
+    --     elseif bytes < 1024 * 1024 * 1024 then
+    --         return string.format("%.2fMB", bytes / 1024 / 1024)
+    --     else
+    --         return string.format("%.2fGB", bytes / 1024 / 1024 / 1024)
+    --     end
+    -- end
+    -- msg = msg .. "\n流量: ↑" .. formatBytes(uplinkB) .. " ↓" .. formatBytes(downlinkB)
+
+    -- 位置
+    local _, _, map_link = util_location.get()
+    if map_link ~= "" then
+        msg = msg .. "\n位置: " .. map_link -- 这里使用 U+00a0 防止换行
+    end
+
+    return msg
+end
+
 return util_mobile

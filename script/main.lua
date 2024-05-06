@@ -25,6 +25,9 @@ mobile.setAuto(1000 * 10, nil, nil, true, 1000 * 60)
 -- 开启 IPv6
 -- mobile.ipv6(true)
 
+-- 初始化 fskv
+log.info("main", "fskv.init", fskv.init())
+
 -- POWERKEY
 local rtos_bsp = rtos.bsp()
 local pin_table = { ["EC618"] = 35, ["EC718P"] = 46 }
@@ -111,7 +114,7 @@ end)
 
 sys.taskInit(function()
     -- 等待网络环境准备就绪
-    sys.waitUntil("IP_READY", 20000)
+    sys.waitUntil("IP_READY", 1000 * 60 * 5)
 
     util_netled.init()
 
