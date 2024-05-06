@@ -21,21 +21,11 @@
 - [x] 定时上报存活
 - [x] 开机通知
 - [x] POW 按键长按短按操作
-- [x] 低功耗模式 (使用 IoT Power 测量, 开发板待机 30min 平均电流 2.5mA)
-- [x] 使用消息队列, 经测试同时发送几百条通知, 不会卡死
-- [x] 通知发送失败, 自动重发
+- [x] 使用消息队列, 测试添加几百条通知, 不会卡死
+- [x] 通知发送失败, 自动重发, 断电后再次开机可以恢复重发
 - [x] 支持主从模式，一主对多从，从机通过串口转发消息，主机接受消息后转发到通知服务
 
 ## :hammer: Usage
 
-> 可以参考 [lageev](https://github.com/lageev/air780e-forwarder) 写的教程 https://kdocs.cn/l/coe1ozIlSX70
+https://mizore.notion.site/Air780E-e750efe0d6cc40c3baa276eeb811d534
 
-### 1. 按注释修改 `script/config.lua` 配置文件
-
-### 2. 烧录脚本
-
-> 固件下载 https://gitee.com/openLuat/LuatOS/releases 选择带有 EC618 或 Air780 关键字的固件
->
-> `core` 目录下文件名中带有 `RNDIS` 的, 支持 RNDIS 网卡功能, 如果 SIM 卡流量不多请勿选择
-
-根据 [air780e.cn](http://air780e.cn) 官方指引下载 LuaTools 并写入 `script` 目录下文件
