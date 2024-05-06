@@ -153,6 +153,14 @@ sys.taskInit(function()
     sys.subscribe("POWERKEY_LONG_PRESS", util_mobile.queryTraffic)
 end)
 
+-- 定时开关飞行模式
+if type(config.FLYMODE_INTERVAL) == "number" and config.FLYMODE_INTERVAL >= 1000 * 60 then
+    sys.timerLoopStart(function()
+        mobile.flymode(0, true)
+        mobile.flymode(0, false)
+    end, config.FLYMODE_INTERVAL)
+end
+
 -- 通话相关
 local is_calling = false
 
