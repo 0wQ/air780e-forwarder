@@ -94,4 +94,7 @@ return {
     --
     -- 本机号码, 优先使用 mobile.number() 接口获取, 如果获取不到则使用此号码
     FALLBACK_LOCAL_NUMBER = "+8618888888888",
+    --
+    -- SIM 卡 pin 码
+    PIN_CODE = "",
 }

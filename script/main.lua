@@ -153,6 +153,16 @@ sys.taskInit(function()
     sys.subscribe("POWERKEY_LONG_PRESS", util_mobile.queryTraffic)
 end)
 
+sys.taskInit(function()
+    if type(config.PIN_CODE) ~= "string" or config.PIN_CODE == "" then
+        return
+    end
+    -- 开机等待 5 秒仍未联网, 再进行 pin 验证
+    if not sys.waitUntil("IP_READY", 1000 * 5) then
+        util_mobile.pinVerify(config.PIN_CODE)
+    end
+end)
+
 -- 定时开关飞行模式
 if type(config.FLYMODE_INTERVAL) == "number" and config.FLYMODE_INTERVAL >= 1000 * 60 then
     sys.timerLoopStart(function()

@@ -1,5 +1,26 @@
 local util_mobile = {}
 
+--- 验证 pin 码
+-- @param pin_code string, pin 码
+function util_mobile.pinVerify(pin_code)
+    local sim_id = mobile.simid()
+
+    pin_code = tostring(pin_code or "")
+    if #pin_code < 4 or #pin_code > 8 then
+        log.warn("util_mobile.pinVerify", "pin 码长度不正确")
+        return
+    end
+
+    local cpin_is_ready = mobile.simPin(sim_id)
+    if cpin_is_ready then
+        log.info("util_mobile.pinVerify", "无需验证 pin 码")
+        return
+    end
+
+    cpin_is_ready = mobile.simPin(sim_id, mobile.PIN_VERIFY, pin_code)
+    log.info("util_mobile.pinVerify", "验证 pin 码" .. (cpin_is_ready and "成功" or "失败"))
+end
+
 -- 运营商数据
 local oper_data = {
     -- 中国移动
