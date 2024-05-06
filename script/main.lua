@@ -20,7 +20,7 @@ socket.setDNS(nil, 1, "119.29.29.29")
 socket.setDNS(nil, 2, "223.5.5.5")
 
 -- SIM 自动恢复, 周期性获取小区信息, 网络遇到严重故障时尝试自动恢复等功能
-mobile.setAuto(1000 * 10, nil, nil, true, 1000 * 60)
+mobile.setAuto(10000, 300000, 8, true, 120000)
 
 -- 开启 IPv6
 -- mobile.ipv6(true)
