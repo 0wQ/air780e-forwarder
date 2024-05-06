@@ -8,16 +8,6 @@ local msg_queue = {}
 local msg_count = 0
 local error_count = 0
 
-local function urlencodeTab(params)
-    local msg = {}
-    for k, v in pairs(params) do
-        table.insert(msg, string.urlEncode(k) .. "=" .. string.urlEncode(v))
-        table.insert(msg, "&")
-    end
-    table.remove(msg)
-    return table.concat(msg)
-end
-
 --- 发送通知
 -- @param msg 消息内容
 -- @param channel 通知渠道

@@ -1,5 +1,15 @@
 local lib_smtp = require "lib_smtp"
 
+local function urlencodeTab(params)
+    local msg = {}
+    for k, v in pairs(params) do
+        table.insert(msg, string.urlEncode(k) .. "=" .. string.urlEncode(v))
+        table.insert(msg, "&")
+    end
+    table.remove(msg)
+    return table.concat(msg)
+end
+
 return {
     -- 发送到 custom_post
     ["custom_post"] = function(msg)
