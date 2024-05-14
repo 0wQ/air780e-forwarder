@@ -113,6 +113,13 @@ sms.setNewSmsCb(function(sender_number, sms_content, m)
 end)
 
 sys.taskInit(function()
+    -- 检测 NETIF_LINK_OFF -> IP_LOSE 事件开关飞行模式
+    sys.subscribe("IP_LOSE", function()
+        mobile.flymode(0, true)
+        mobile.flymode(0, false)
+	    log.info("IP_LOSE 事件触发 -> 开关飞行模式", mobile.flymode(0))
+    end)
+
     -- 等待网络环境准备就绪
     sys.waitUntil("IP_READY", 1000 * 60 * 5)
 
