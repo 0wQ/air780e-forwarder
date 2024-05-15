@@ -72,7 +72,7 @@ end
 local function poll()
     -- 打印网络状态
     if mobile.status() ~= 1 then
-        log.warn("util_notify.poll", "mobile.status", mobile_status, util_mobile.status())
+        log.warn("util_notify.poll", "mobile.status", mobile.status(), util_mobile.status())
     end
 
     -- 消息队列非空
