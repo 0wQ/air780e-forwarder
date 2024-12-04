@@ -30,7 +30,7 @@ log.info("main", "fskv.init", fskv.init())
 
 -- POWERKEY
 local rtos_bsp = rtos.bsp()
-local pin_table = { ["EC618"] = 35, ["EC718P"] = 46 }
+local pin_table = { ["EC618"] = 35, ["EC718P"] = 46, ["EC718PV"] = 46 }
 local powerkey_pin = pin_table[rtos_bsp]
 
 if powerkey_pin then
@@ -58,7 +58,7 @@ if powerkey_pin then
             log.debug("EVENT.POWERKEY_SHORT_PRESS", duration)
             sys.publish("POWERKEY_SHORT_PRESS", duration)
         end
-    end, gpio.PULLUP)
+    end, gpio.PULLUP, gpio.FALLING)
 end
 
 -- 加载模块
