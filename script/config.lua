@@ -97,4 +97,9 @@ return {
     --
     -- SIM 卡 pin 码
     PIN_CODE = "",
+    --
+    -- 短信控制白名单号码, 为空或注释掉, 表示禁止所有号码
+    -- 短信格式示例: SMS,10086,查询流量
+    -- 配置示例: SMS_CONTROL_WHITELIST_NUMBERS = { "18xxxxxxx", "18xxxxxxx", "18xxxxxxx" }
+    SMS_CONTROL_WHITELIST_NUMBERS = {},
 }

@@ -94,6 +94,26 @@ if containsValue(config.NOTIFY_TYPE, "serial") then
     end)
 end
 
+-- 判断一个元素是否在一个表中
+local function isElementInTable(myTable, target)
+    for _, value in ipairs(myTable) do
+        if value == target then
+            return true
+        end
+    end
+    return false
+end
+
+-- 判断白名单号码是否符合触发短信控制的条件
+local function isWhiteListNumber(sender_number)
+    -- 判断如果未设置白名单号码, 禁止所有号码触发
+    if type(config.SMS_CONTROL_WHITELIST_NUMBERS) ~= "table" or #config.SMS_CONTROL_WHITELIST_NUMBERS == 0 then
+        return false
+    end
+    -- 已设置白名单号码, 判断是否在白名单中
+    return isElementInTable(config.SMS_CONTROL_WHITELIST_NUMBERS, sender_number)
+end
+
 -- 短信接收回调
 sms.setNewSmsCb(function(sender_number, sms_content, m)
     local time = string.format("%d/%02d/%02d %02d:%02d:%02d", m.year + 2000, m.mon, m.day, m.hour, m.min, m.sec)
@@ -101,11 +121,14 @@ sms.setNewSmsCb(function(sender_number, sms_content, m)
 
     -- 短信控制
     local is_sms_ctrl = false
-    local receiver_number, sms_content_to_be_sent = sms_content:match("^SMS,(+?%d+),(.+)$")
-    receiver_number, sms_content_to_be_sent = receiver_number or "", sms_content_to_be_sent or ""
-    if sms_content_to_be_sent ~= "" and receiver_number ~= "" and #receiver_number >= 5 and #receiver_number <= 20 then
-        sms.send(receiver_number, sms_content_to_be_sent)
-        is_sms_ctrl = true
+    -- 判断发送者是否为白名单号码
+    if isWhiteListNumber(sender_number) then
+        local receiver_number, sms_content_to_be_sent = sms_content:match("^SMS,(+?%d+),(.+)$")
+        receiver_number, sms_content_to_be_sent = receiver_number or "", sms_content_to_be_sent or ""
+        if sms_content_to_be_sent ~= "" and receiver_number ~= "" and #receiver_number >= 5 and #receiver_number <= 20 then
+            sms.send(receiver_number, sms_content_to_be_sent)
+            is_sms_ctrl = true
+        end
     end
 
     -- 发送通知
