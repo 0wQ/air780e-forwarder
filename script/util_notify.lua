@@ -124,7 +124,9 @@ local function poll()
     -- 每连续失败 2 次, 开关飞行模式
     if error_count % 2 == 0 then
         -- 开关飞行模式
-        log.warn("util_notify.poll", "连续失败次数过多, 开关飞行模式")
+        log.warn("util_notify.poll", "连续失败次数过多, 重启协议栈 & 开关飞行模式")
+        mobile.reset()
+        sys.wait(1000)
         mobile.flymode(0, true)
         mobile.flymode(0, false)
         sys.wait(1000)
@@ -167,7 +169,7 @@ sys.taskInit(function()
             break
         end
         log.info("util_notify", "检查到 fskv 中有历史消息", k, v:gsub("\r", "\\r"):gsub("\n", "\\n"))
-        util_notify.add(v, nil, k)
+        util_notify.add(v .. "\n#FSKV", nil, k)
     end
 end)
 

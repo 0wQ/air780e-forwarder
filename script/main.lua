@@ -20,7 +20,7 @@ socket.setDNS(nil, 1, "119.29.29.29")
 socket.setDNS(nil, 2, "223.5.5.5")
 
 -- SIM 自动恢复, 周期性获取小区信息, 网络遇到严重故障时尝试自动恢复等功能
-mobile.setAuto(10000, 300000, 8, true, 120000)
+mobile.setAuto(10000, 30000, 8, true, 60000)
 
 -- 开启 IPv6
 -- mobile.ipv6(true)
@@ -174,6 +174,13 @@ sys.taskInit(function()
     sys.subscribe("POWERKEY_SHORT_PRESS", function() util_notify.add("#ALIVE") end)
     -- 电源键长按查询流量
     sys.subscribe("POWERKEY_LONG_PRESS", util_mobile.queryTraffic)
+
+    sys.wait(60000);
+    -- EC618配置小区重选信号差值门限，不能大于15dbm，必须在飞行模式下才能用
+    mobile.flymode(0, true)
+    mobile.config(mobile.CONF_RESELTOWEAKNCELL, 10)
+    mobile.config(mobile.CONF_STATICCONFIG, 1) -- 开启网络静态优化
+    mobile.flymode(0, false)
 end)
 
 sys.taskInit(function()
@@ -189,8 +196,13 @@ end)
 -- 定时开关飞行模式
 if type(config.FLYMODE_INTERVAL) == "number" and config.FLYMODE_INTERVAL >= 1000 * 60 then
     sys.timerLoopStart(function()
-        mobile.flymode(0, true)
-        mobile.flymode(0, false)
+        sys.taskInit(function()
+            log.info("main", "定时开关飞行模式")
+            mobile.reset()
+            sys.wait(1000)
+            mobile.flymode(0, true)
+            mobile.flymode(0, false)
+        end)
     end, config.FLYMODE_INTERVAL)
 end
 
